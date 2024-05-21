@@ -1,0 +1,9 @@
+2024-05-21 16:31:22,984 INFO    StreamThr :181097 [internal.py:wandb_internal():85] W&B internal server running at pid: 181097, started at: 2024-05-21 16:31:22.983434
+2024-05-21 16:31:22,989 DEBUG   HandlerThread:181097 [handler.py:handle_request():158] handle_request: status
+2024-05-21 16:31:27,989 DEBUG   HandlerThread:181097 [handler.py:handle_request():158] handle_request: status_report
+2024-05-21 16:31:27,990 INFO    WriterThread:181097 [datastore.py:open_for_write():87] open: /home/mhm/workspace/Competition_TaxingAI/wandb/run-20240521_163122-ntlrlt56/run-ntlrlt56.wandb
+2024-05-21 16:31:32,990 DEBUG   HandlerThread:181097 [handler.py:handle_request():158] handle_request: status_report
+2024-05-21 16:31:37,991 DEBUG   HandlerThread:181097 [handler.py:handle_request():158] handle_request: status_report
+2024-05-21 16:31:42,992 DEBUG   HandlerThread:181097 [handler.py:handle_request():158] handle_request: status_report
+2024-05-21 16:31:47,993 DEBUG   HandlerThread:181097 [handler.py:handle_request():158] handle_request: status_report
+2024-05-21 16:31:52,993 DEBUG   HandlerThread:181097 [handler.py:handle_request():158] handle_request: status_report

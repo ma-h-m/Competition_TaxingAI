@@ -1,6 +1,6 @@
-from TaxAI.entities.base import BaseEntity
-from TaxAI.entities.government import Government
-from TaxAI.utils.episode import EpisodeKey
+from entities.base import BaseEntity
+from entities.government import Government
+from utils.episode import EpisodeKey
 import numpy as np
 import copy
 import math

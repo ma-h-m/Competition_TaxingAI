@@ -1,0 +1,128 @@
+{
+    "os": "Linux-5.15.146.1-microsoft-standard-WSL2-x86_64-with-glibc2.31",
+    "python": "3.9.19",
+    "heartbeatAt": "2024-05-21T08:29:29.968337",
+    "startedAt": "2024-05-21T08:29:27.887545",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/home/mhm/workspace/Competition_TaxingAI/test_wandb.py",
+    "codePathLocal": "test_wandb.py",
+    "codePath": "test_wandb.py",
+    "git": {
+        "remote": "https://github.com/ma-h-m/Competition_TaxingAI",
+        "commit": "1374053e7a8d6f514a4fdab1eed1ec41027fbe0b"
+    },
+    "email": "mahaoming8585485@163.com",
+    "root": "/home/mhm/workspace/Competition_TaxingAI",
+    "host": "DESKTOP-JRJ2RE5",
+    "username": "mhm",
+    "executable": "/home/mhm/anaconda3/envs/taxingai-venv/bin/python",
+    "cpu_count": 8,
+    "cpu_count_logical": 16,
+    "cpu_freq": {
+        "current": 4199.919000000001,
+        "min": 0.0,
+        "max": 0.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 4199.919,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 4199.919,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 4199.919,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 4199.919,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 4199.919,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 4199.919,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 4199.919,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 4199.919,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 4199.919,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 4199.919,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 4199.919,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 4199.919,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 4199.919,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 4199.919,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 4199.919,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 4199.919,
+            "min": 0.0,
+            "max": 0.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 1006.853931427002,
+            "used": 91.2479362487793
+        }
+    },
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce RTX 4090",
+            "memory_total": 25757220864
+        }
+    ],
+    "memory": {
+        "total": 15.20157241821289
+    }
+}

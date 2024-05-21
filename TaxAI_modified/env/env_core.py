@@ -1,6 +1,6 @@
-from TaxAI.entities.base import BaseEntity
-from TaxAI.entities.household import Household
-from TaxAI.entities.government import Government
+from entities.base import BaseEntity
+from entities.household import Household
+from entities.government import Government
 import numpy as np
 import math
 from gym.spaces import Box

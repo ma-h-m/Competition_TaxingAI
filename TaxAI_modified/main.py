@@ -16,7 +16,7 @@ import yaml
 import argparse
 from omegaconf import OmegaConf
 
-from agents.model_self.baseline import agent
+from agents.model_self.agent import agent
 
 
 import shutil
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     args = parse_args()
     path = args.config
     # yaml_cfg = OmegaConf.load(f'./cfg/{path}.yaml')
-    yaml_cfg = OmegaConf.load(f'./model_self/default.yaml')
+    yaml_cfg = OmegaConf.load(f'./TaxAI_modified/agents/model_self/hyper_params.yaml')
     # todo if local run code
     # yaml_cfg = OmegaConf.load(f'D:\\code\\AI-TaxingPolicy\\AI-TaxingPolicy\\cfg\\default.yaml')
     yaml_cfg.Trainer["n_households"] = args.n_households
