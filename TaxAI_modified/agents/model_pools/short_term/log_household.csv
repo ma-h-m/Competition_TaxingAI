@@ -1,0 +1,6 @@
+path,algo,epoch,score
+TaxAI_modified/agents/model_pools/short_term/models/acUnknown-45/run/house_net.pt,ac,45,45
+TaxAI_modified/agents/model_pools/short_term/models/acUnknown-46/run/house_net.pt,ac,46,62
+TaxAI_modified/agents/model_pools/short_term/models/acUnknown-47/run/house_net.pt,ac,47,61
+TaxAI_modified/agents/model_pools/short_term/models/acUnknown-48/run/house_net.pt,ac,48,20
+TaxAI_modified/agents/model_pools/short_term/models/acUnknown-49/run/house_net.pt,ac,49,31

@@ -1,0 +1,48 @@
+2024-05-22 10:59:16,725 INFO    StreamThr :7419 [internal.py:wandb_internal():85] W&B internal server running at pid: 7419, started at: 2024-05-22 10:59:16.724546
+2024-05-22 10:59:16,731 DEBUG   HandlerThread:7419 [handler.py:handle_request():158] handle_request: status
+2024-05-22 10:59:16,732 INFO    WriterThread:7419 [datastore.py:open_for_write():87] open: /home/mhm/workspace/Competition_TaxingAI/wandb/run-20240522_105916-6snvsaa9/run-6snvsaa9.wandb
+2024-05-22 10:59:16,733 DEBUG   SenderThread:7419 [sender.py:send():378] send: header
+2024-05-22 10:59:16,736 DEBUG   SenderThread:7419 [sender.py:send():378] send: run
+2024-05-22 10:59:17,329 INFO    SenderThread:7419 [dir_watcher.py:__init__():211] watching files in: /home/mhm/workspace/Competition_TaxingAI/wandb/run-20240522_105916-6snvsaa9/files
+2024-05-22 10:59:17,330 INFO    SenderThread:7419 [sender.py:_start_run_threads():1123] run started: 6snvsaa9 with start time 1716346756.723685
+2024-05-22 10:59:17,339 DEBUG   HandlerThread:7419 [handler.py:handle_request():158] handle_request: check_version
+2024-05-22 10:59:17,340 DEBUG   SenderThread:7419 [sender.py:send_request():405] send_request: check_version
+2024-05-22 10:59:17,465 DEBUG   HandlerThread:7419 [handler.py:handle_request():158] handle_request: run_start
+2024-05-22 10:59:17,473 DEBUG   HandlerThread:7419 [system_info.py:__init__():26] System info init
+2024-05-22 10:59:17,473 DEBUG   HandlerThread:7419 [system_info.py:__init__():41] System info init done
+2024-05-22 10:59:17,473 INFO    HandlerThread:7419 [system_monitor.py:start():194] Starting system monitor
+2024-05-22 10:59:17,473 INFO    HandlerThread:7419 [system_monitor.py:probe():214] Collecting system info
+2024-05-22 10:59:17,473 INFO    SystemMonitor:7419 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-05-22 10:59:17,474 INFO    SystemMonitor:7419 [interfaces.py:start():188] Started cpu monitoring
+2024-05-22 10:59:17,476 INFO    SystemMonitor:7419 [interfaces.py:start():188] Started disk monitoring
+2024-05-22 10:59:17,478 INFO    SystemMonitor:7419 [interfaces.py:start():188] Started gpu monitoring
+2024-05-22 10:59:17,480 INFO    SystemMonitor:7419 [interfaces.py:start():188] Started memory monitoring
+2024-05-22 10:59:17,482 INFO    SystemMonitor:7419 [interfaces.py:start():188] Started network monitoring
+2024-05-22 10:59:17,487 DEBUG   HandlerThread:7419 [system_info.py:probe():150] Probing system
+2024-05-22 10:59:17,511 DEBUG   HandlerThread:7419 [system_info.py:_probe_git():135] Probing git
+2024-05-22 10:59:17,518 DEBUG   HandlerThread:7419 [system_info.py:_probe_git():143] Probing git done
+2024-05-22 10:59:17,518 DEBUG   HandlerThread:7419 [system_info.py:probe():198] Probing system done
+2024-05-22 10:59:17,518 DEBUG   HandlerThread:7419 [system_monitor.py:probe():223] {'os': 'Linux-5.15.146.1-microsoft-standard-WSL2-x86_64-with-glibc2.31', 'python': '3.9.19', 'heartbeatAt': '2024-05-22T02:59:17.487508', 'startedAt': '2024-05-22T02:59:16.717583', 'docker': None, 'cuda': None, 'args': ('--device-num', '0', '--n_households', '1000', '--alg', 'ppo', '--task', 'gdp', '--seed', '2', '--hidden_size', '128', '--q_lr', '3e-4', '--p_lr', '3e-4', '--batch_size', '128'), 'state': 'running', 'program': '/home/mhm/workspace/Competition_TaxingAI/TaxAI_modified/main.py', 'codePathLocal': 'TaxAI_modified/main.py', 'codePath': 'TaxAI_modified/main.py', 'git': {'remote': 'https://github.com/ma-h-m/Competition_TaxingAI', 'commit': '34ee4e915a5bb85a238943777de9a7bf3fb66e03'}, 'email': 'mahaoming8585485@163.com', 'root': '/home/mhm/workspace/Competition_TaxingAI', 'host': 'DESKTOP-JRJ2RE5', 'username': 'mhm', 'executable': '/home/mhm/anaconda3/envs/taxingai-venv/bin/python', 'cpu_count': 8, 'cpu_count_logical': 16, 'cpu_freq': {'current': 4199.919000000001, 'min': 0.0, 'max': 0.0}, 'cpu_freq_per_core': [{'current': 4199.919, 'min': 0.0, 'max': 0.0}, {'current': 4199.919, 'min': 0.0, 'max': 0.0}, {'current': 4199.919, 'min': 0.0, 'max': 0.0}, {'current': 4199.919, 'min': 0.0, 'max': 0.0}, {'current': 4199.919, 'min': 0.0, 'max': 0.0}, {'current': 4199.919, 'min': 0.0, 'max': 0.0}, {'current': 4199.919, 'min': 0.0, 'max': 0.0}, {'current': 4199.919, 'min': 0.0, 'max': 0.0}, {'current': 4199.919, 'min': 0.0, 'max': 0.0}, {'current': 4199.919, 'min': 0.0, 'max': 0.0}, {'current': 4199.919, 'min': 0.0, 'max': 0.0}, {'current': 4199.919, 'min': 0.0, 'max': 0.0}, {'current': 4199.919, 'min': 0.0, 'max': 0.0}, {'current': 4199.919, 'min': 0.0, 'max': 0.0}, {'current': 4199.919, 'min': 0.0, 'max': 0.0}, {'current': 4199.919, 'min': 0.0, 'max': 0.0}], 'disk': {'/': {'total': 1006.853931427002, 'used': 91.49148178100586}}, 'gpu': 'NVIDIA GeForce RTX 4090', 'gpu_count': 1, 'gpu_devices': [{'name': 'NVIDIA GeForce RTX 4090', 'memory_total': 25757220864}], 'memory': {'total': 15.20157241821289}}
+2024-05-22 10:59:17,518 INFO    HandlerThread:7419 [system_monitor.py:probe():224] Finished collecting system info
+2024-05-22 10:59:17,518 INFO    HandlerThread:7419 [system_monitor.py:probe():227] Publishing system info
+2024-05-22 10:59:17,518 DEBUG   HandlerThread:7419 [system_info.py:_save_conda():207] Saving list of conda packages installed into the current environment
+2024-05-22 10:59:18,332 INFO    Thread-17 :7419 [dir_watcher.py:_on_file_created():271] file/dir created: /home/mhm/workspace/Competition_TaxingAI/wandb/run-20240522_105916-6snvsaa9/files/conda-environment.yaml
+2024-05-22 10:59:19,887 DEBUG   HandlerThread:7419 [system_info.py:_save_conda():222] Saving conda packages done
+2024-05-22 10:59:19,889 INFO    HandlerThread:7419 [system_monitor.py:probe():229] Finished publishing system info
+2024-05-22 10:59:19,894 DEBUG   SenderThread:7419 [sender.py:send():378] send: files
+2024-05-22 10:59:19,894 INFO    SenderThread:7419 [sender.py:_save_file():1389] saving file wandb-metadata.json with policy now
+2024-05-22 10:59:20,007 DEBUG   HandlerThread:7419 [handler.py:handle_request():158] handle_request: python_packages
+2024-05-22 10:59:20,008 DEBUG   SenderThread:7419 [sender.py:send_request():405] send_request: python_packages
+2024-05-22 10:59:20,009 DEBUG   HandlerThread:7419 [handler.py:handle_request():158] handle_request: stop_status
+2024-05-22 10:59:20,009 DEBUG   SenderThread:7419 [sender.py:send_request():405] send_request: stop_status
+2024-05-22 10:59:20,328 DEBUG   SenderThread:7419 [sender.py:send():378] send: telemetry
+2024-05-22 10:59:20,330 INFO    Thread-17 :7419 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/mhm/workspace/Competition_TaxingAI/wandb/run-20240522_105916-6snvsaa9/files/conda-environment.yaml
+2024-05-22 10:59:20,330 INFO    Thread-17 :7419 [dir_watcher.py:_on_file_created():271] file/dir created: /home/mhm/workspace/Competition_TaxingAI/wandb/run-20240522_105916-6snvsaa9/files/wandb-metadata.json
+2024-05-22 10:59:20,330 INFO    Thread-17 :7419 [dir_watcher.py:_on_file_created():271] file/dir created: /home/mhm/workspace/Competition_TaxingAI/wandb/run-20240522_105916-6snvsaa9/files/requirements.txt
+2024-05-22 10:59:20,746 INFO    wandb-upload_0:7419 [upload_job.py:push():130] Uploaded file /tmp/tmptpvgd003wandb/2hube87g-wandb-metadata.json
+2024-05-22 10:59:22,328 DEBUG   HandlerThread:7419 [handler.py:handle_request():158] handle_request: status_report
+2024-05-22 10:59:27,329 DEBUG   HandlerThread:7419 [handler.py:handle_request():158] handle_request: status_report
+2024-05-22 10:59:32,330 DEBUG   HandlerThread:7419 [handler.py:handle_request():158] handle_request: status_report
+2024-05-22 10:59:35,017 DEBUG   HandlerThread:7419 [handler.py:handle_request():158] handle_request: stop_status
+2024-05-22 10:59:35,018 DEBUG   SenderThread:7419 [sender.py:send_request():405] send_request: stop_status
+2024-05-22 10:59:38,268 DEBUG   HandlerThread:7419 [handler.py:handle_request():158] handle_request: status_report

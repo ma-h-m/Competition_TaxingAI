@@ -12,17 +12,23 @@ def make_logpath(algo, n = "", test=False):
     if not log_dir.exists():
         os.makedirs(log_dir)
 
-    if not model_dir.exists():
-        curr_run = 'run1'
+    # if not model_dir.exists():
+    #     curr_run = 'run1'
 
-    else:
-        exst_run_nums = [int(str(folder.name).split('run')[1]) for folder in
-                         model_dir.iterdir() if
-                         str(folder.name).startswith('run')]
-        if len(exst_run_nums) == 0:
-            curr_run = 'run1'
-        else:
-            curr_run = 'run%i' % (max(exst_run_nums) + 1)
+    # else:
+    #     exst_run_nums = [int(str(folder.name).split('run')[1]) for folder in
+    #                      model_dir.iterdir() if
+    #                      str(folder.name).startswith('run')]
+    #     if len(exst_run_nums) == 0:
+    #         curr_run = 'run1'
+    #     else:
+    #         curr_run = 'run%i' % (max(exst_run_nums) + 1)
+    import shutil
+    if model_dir.exists():
+        for item in model_dir.iterdir():
+            if item.is_dir() and item.name.startswith('run'):
+                shutil.rmtree(item)
+    curr_run = 'run'
     run_dir = model_dir / curr_run
     os.makedirs(run_dir)
 

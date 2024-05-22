@@ -1,0 +1,6 @@
+path,algo,epoch,score
+TaxAI_modified/agents/model_pools/short_term/models/acUnknown-45/run/gov_net.pt,ac,45,48
+TaxAI_modified/agents/model_pools/short_term/models/acUnknown-46/run/gov_net.pt,ac,46,50
+TaxAI_modified/agents/model_pools/short_term/models/acUnknown-47/run/gov_net.pt,ac,47,34
+TaxAI_modified/agents/model_pools/short_term/models/acUnknown-48/run/gov_net.pt,ac,48,16
+TaxAI_modified/agents/model_pools/short_term/models/acUnknown-49/run/gov_net.pt,ac,49,27

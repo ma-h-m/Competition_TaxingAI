@@ -1,0 +1,11 @@
+path,algo,epoch,score
+TaxAI_modified/agents/model_pools/top_k/models/acUnknown-4/run/house_net.pt,ac,4,100
+TaxAI_modified/agents/model_pools/top_k/models/acUnknown-21/run/house_net.pt,ac,21,100
+TaxAI_modified/agents/model_pools/top_k/models/acUnknown-25/run/house_net.pt,ac,25,98
+TaxAI_modified/agents/model_pools/top_k/models/acUnknown-1/run/house_net.pt,ac,1,97
+TaxAI_modified/agents/model_pools/top_k/models/acUnknown-33/run/house_net.pt,ac,33,95
+TaxAI_modified/agents/model_pools/top_k/models/acUnknown-9/run/house_net.pt,ac,9,94
+TaxAI_modified/agents/model_pools/top_k/models/acUnknown-7/run/house_net.pt,ac,7,91
+TaxAI_modified/agents/model_pools/top_k/models/acUnknown-32/run/house_net.pt,ac,32,91
+TaxAI_modified/agents/model_pools/top_k/models/acUnknown-0/run/house_net.pt,ac,0,90
+TaxAI_modified/agents/model_pools/top_k/models/acUnknown-38/run/house_net.pt,ac,38,77
