@@ -89,7 +89,7 @@ def update_short_term_policy_pool(short_pool_size = 30,model_path = "TaxAI_modif
     #         columns = ['path', "algo", "epoch", "score"]
     #         df_household = pd.DataFrame(columns = columns)
     
-    target_path = "TaxAI_modified/agents/model_pools/short_term/models/" + algo + id + "-" + str(epoch)
+    target_path = "TaxAI_modified/agents/model_pools/short_term/models/" + id + "-" + str(epoch)
     copy_files_excluding(model_path, target_path)
 
     new_row_gov = {"path": target_path + "/run/gov_net.pt", "algo": algo, "epoch": epoch, "score": government_score}
@@ -122,7 +122,7 @@ def update_long_term_policy_pool(long_pool_size = 30000,model_path = "TaxAI_modi
     df_household = _read_csv(log_household_path)
 
     
-    target_path = "TaxAI_modified/agents/model_pools/long_term/models/" + algo + id + "-" + str(epoch)
+    target_path = "TaxAI_modified/agents/model_pools/long_term/models/" + id + "-" + str(epoch)
     copy_files_excluding(model_path, target_path)
 
     new_row_gov = {"path": target_path + "/run/gov_net.pt", "algo": algo, "epoch": epoch, "score": government_score}
@@ -153,7 +153,7 @@ def update_top_k_policy_pool(pool_size = 10,model_path = "TaxAI_modified/agents/
     df_gov = _read_csv(log_gov_path)
     df_household = _read_csv(log_household_path)
     
-    target_path = "TaxAI_modified/agents/model_pools/top_k/models/" + algo + id + "-" + str(epoch)
+    target_path = "TaxAI_modified/agents/model_pools/top_k/models/" + id + "-" + str(epoch)
     # copy_files_excluding(model_path, target_path)
 
     new_row_gov = {"path": target_path + "/run/gov_net.pt", "algo": algo, "epoch": epoch, "score": government_score}

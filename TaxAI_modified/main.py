@@ -37,8 +37,16 @@ def parse_args():
     parser.add_argument('--update_cycles', type=int, default=100, help='[10，100，1000]')
     parser.add_argument('--update_freq', type=int, default=10, help='[10，20，30]')
     parser.add_argument('--initial_train', type=int, default=10, help='[10，100，200]')
+    
     # parser.add_argument('--update_freq', type=int, default=1, help='the number of total households')
     # parser.add_argument('--initial_train', type=int, default=2000, help='the number of total households')
+
+
+    parser.add_argument('--long_term_policy_update_freq', type=int, default=10, help='interval of updating long term policy pool')
+    parser.add_argument("--long_term_policy_pool_size", type=int, default=30000, help="size of long term policy pool")
+    parser.add_argument("--short_term_policy_pool_size", type=int, default=10, help="size of short term policy pool")
+    parser.add_argument("--top_k_policy_update_freq", type=int, default=10, help="interval of updating top k policy pool")
+    parser.add_argument("--top_k_policy_pool_size", type=int, default=10, help="size of top k policy pool")
 
     args = parser.parse_args()
     return args
@@ -83,6 +91,13 @@ if __name__ == '__main__':
     yaml_cfg.Trainer["q_lr"] = args.q_lr
     yaml_cfg.Trainer["p_lr"] = args.p_lr
     yaml_cfg.Trainer["batch_size"] = args.batch_size
+    
+    yaml_cfg.Trainer["long_term_policy_update_freq"] = args.long_term_policy_update_freq
+    yaml_cfg.Trainer["long_term_policy_pool_size"] = args.long_term_policy_pool_size
+    yaml_cfg.Trainer["short_term_policy_pool_size"] = args.short_term_policy_pool_size
+    yaml_cfg.Trainer["top_k_policy_update_freq"] = args.top_k_policy_update_freq
+    yaml_cfg.Trainer["top_k_policy_pool_size"] = args.top_k_policy_pool_size
+
     
     set_seeds(yaml_cfg.seed, cuda=yaml_cfg.Trainer["cuda"])
     os.environ['CUDA_VISIBLE_DEVICES'] = str(args.device_num)

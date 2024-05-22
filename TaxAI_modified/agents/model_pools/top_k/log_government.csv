@@ -1,11 +1,2 @@
 path,algo,epoch,score
-TaxAI_modified/agents/model_pools/top_k/models/acUnknown-30/run/gov_net.pt,ac,30,100
-TaxAI_modified/agents/model_pools/top_k/models/acUnknown-39/run/gov_net.pt,ac,39,97
-TaxAI_modified/agents/model_pools/top_k/models/acUnknown-23/run/gov_net.pt,ac,23,95
-TaxAI_modified/agents/model_pools/top_k/models/acUnknown-6/run/gov_net.pt,ac,6,94
-TaxAI_modified/agents/model_pools/top_k/models/acUnknown-12/run/gov_net.pt,ac,12,90
-TaxAI_modified/agents/model_pools/top_k/models/acUnknown-4/run/gov_net.pt,ac,4,88
-TaxAI_modified/agents/model_pools/top_k/models/acUnknown-19/run/gov_net.pt,ac,19,85
-TaxAI_modified/agents/model_pools/top_k/models/acUnknown-14/run/gov_net.pt,ac,14,82
-TaxAI_modified/agents/model_pools/top_k/models/acUnknown-36/run/gov_net.pt,ac,36,78
-TaxAI_modified/agents/model_pools/top_k/models/acUnknown-10/run/gov_net.pt,ac,10,77
+TaxAI_modified/agents/model_pools/top_k/models/independent_ppo-1716368677-0/run/gov_net.pt,independent_ppo,0,2.3208296341104737
