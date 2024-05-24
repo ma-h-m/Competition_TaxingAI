@@ -1,87 +1,81 @@
-import socket
 import os
+import paramiko
+from scp import SCPClient
 
-SERVER_HOST = '127.0.0.1'
-SERVER_PORT = 5001
-BUFFER_SIZE = 4096
-SEPARATOR = "<SEPARATOR>"
+# SSH 连接信息
+SERVER_IP = '127.0.0.1'
+SERVER_PORT = 2222  # 通常 SSH 使用端口 22
+USERNAME = 'your_username'
+PASSWORD = 'your_password'
 
-def push_file(filepath):
-    filename = os.path.basename(filepath)
-    filesize = os.path.getsize(filepath)
+# 客户端唯一 ID
+CLIENT_ID = 'unique_client_id'
+
+# 本地同步文件夹
+LOCAL_DIR = '/home/mhm/workspace/Competition_TaxingAI/TaxAI_modified/agents/model_pools'
+REMOTE_DIR = 'Server/policy_pools'
+
+def setup_ssh():
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(SERVER_IP, port=SERVER_PORT, username=USERNAME, password=PASSWORD)
+    return ssh
+
+def send_client_id(ssh_client):
+    stdin, stdout, stderr = ssh_client.exec_command(CLIENT_ID)
+    stdout.channel.recv_exit_status()
+
+def upload_file(ssh_client, local_path, remote_path):
+    scp = SCPClient(ssh_client.get_transport())
+    scp.put(local_path, remote_path)
+    print(f'Uploaded: {local_path} to {remote_path}')
+
+def download_file(ssh_client, remote_path, local_path):
+    scp = SCPClient(ssh_client.get_transport())
+    scp.get(remote_path, local_path)
+    print(f'Downloaded: {remote_path} to {local_path}')
+
+def sync_to_server(remote_dir):
+    ssh_client = setup_ssh()
+
+    # 传输客户端 ID，并在服务器上创建相应的文件夹
+    send_client_id(ssh_client)
     
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((SERVER_HOST, SERVER_PORT))
-
-    client_socket.send(f"PUSH{SEPARATOR}{filename}{SEPARATOR}{filesize}{SEPARATOR}".encode())
-    
-    with open(filepath, "rb") as f:
-        while True:
-            bytes_read = f.read(BUFFER_SIZE)
-            if not bytes_read:
-                break
-            client_socket.sendall(bytes_read)
-    
-    client_socket.send(f"DONE{SEPARATOR}{filename}".encode())
-    client_socket.close()
-
-def push_folder(folder_path):
-    for root, dirs, files in os.walk(folder_path):
+    for root, dirs, files in os.walk(LOCAL_DIR):
         for file in files:
-            filepath = os.path.join(root, file)
-            relative_path = os.path.relpath(filepath, folder_path)
-            push_file_with_path(filepath, relative_path)
+            local_path = os.path.join(root, file)
+            relative_path = os.path.relpath(local_path, LOCAL_DIR)
+            remote_path = os.path.join(remote_dir, relative_path)
+            
+            upload_file(ssh_client, local_path, remote_path)
+    
+    ssh_client.close()
 
-def push_file_with_path(filepath, relative_path):
-    filesize = os.path.getsize(filepath)
-    
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((SERVER_HOST, SERVER_PORT))
-    
-    client_socket.send(f"PUSH{SEPARATOR}{relative_path}{SEPARATOR}{filesize}{SEPARATOR}".encode())
+def sync_from_server(remote_dir):
+    ssh_client = setup_ssh()
 
-    with open(filepath, "rb") as f:
-        while True:
-            bytes_read = f.read(BUFFER_SIZE)
-            if not bytes_read:
-                break
-            client_socket.sendall(bytes_read)
+    # 传输客户端 ID
+    send_client_id(ssh_client)
     
-    client_socket.send(f"DONE{SEPARATOR}{relative_path}".encode())
-    client_socket.close()
-
-def fetch_file(filename, save_path):
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((SERVER_HOST, SERVER_PORT))
+    for root, dirs, files in os.walk(REMOTE_DIR):
+        for file in files:
+            remote_path = os.path.join(root, file)
+            relative_path = os.path.relpath(remote_path, REMOTE_DIR)
+            local_path = os.path.join(LOCAL_DIR, relative_path)
+            
+            download_file(ssh_client, remote_path, local_path)
     
-    client_socket.send(f"FETCH{SEPARATOR}{filename}".encode())
-    
-    received = client_socket.recv(BUFFER_SIZE).decode()
-    if received == "FILE_NOT_FOUND":
-        print(f"File {filename} not found on server.")
-    else:
-        filesize = int(received.split(SEPARATOR)[0])
-        with open(save_path, "wb") as f:
-            bytes_received = 0
-            while bytes_received < filesize:
-                bytes_read = client_socket.recv(BUFFER_SIZE)
-                if not bytes_read:
-                    break
-                f.write(bytes_read)
-                bytes_received += len(bytes_read)
-    
-    client_socket.close()
-
-def initial_communicate_with_server(client_id="Unknown"):
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((SERVER_HOST, SERVER_PORT))
-    client_socket.send(f"INIT{SEPARATOR}{client_id}".encode())
-    response = client_socket.recv(BUFFER_SIZE).decode()
-    print(response)
-    client_socket.close()
+    ssh_client.close()
 
 if __name__ == "__main__":
-    # 示例用法
-    initial_communicate_with_server("Client123")
-    push_folder("/home/mhm/workspace/Competition_TaxingAI/TaxAI_modified/agents/model_pools")
-    # fetch_file("file_to_fetch", "save_path")
+    # remote_dir = input("请输入服务器上的远程目录: ")
+    remote_dir = REMOTE_DIR
+
+    sync_to_server(remote_dir)
+    # action = input("输入 'upload' 将本地文件同步到服务器, 输入 'download' 将服务器文件同步到本地: ")
+    # if action == 'upload':
+        # sync_to_server(remote_dir)
+    # elif action == 'download':
+        # sync_from_server(remote_dir)
+    # else:
+    #     print("无效的输入，请输入 'upload' 或 'download'")
