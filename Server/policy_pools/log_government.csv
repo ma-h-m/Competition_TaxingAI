@@ -1,0 +1,17 @@
+id,path,algo,epoch,score,client_id
+test2_long_term_independent_ppo-1716458914-0,Server/policy_pools/test2/long_term/models/independent_ppo-1716458914-0/run/gov_net.pt,independent_ppo,0,2.3208296341104737,test2
+test2_short_term_independent_ppo-1716458914-0,Server/policy_pools/test2/short_term/models/independent_ppo-1716458914-0/run/gov_net.pt,independent_ppo,0,2.3208296341104737,test2
+test2_short_term_independent_ppo-1716458914-1,Server/policy_pools/test2/short_term/models/independent_ppo-1716458914-1/run/gov_net.pt,independent_ppo,1,1.5331095483626451,test2
+test2_top_k_independent_ppo-1716458914-0,Server/policy_pools/test2/top_k/models/independent_ppo-1716458914-0/run/gov_net.pt,independent_ppo,0,2.3208296341104737,test2
+test_long_term_independent_ppo-1716458914-0,Server/policy_pools/test/long_term/models/independent_ppo-1716458914-0/run/gov_net.pt,independent_ppo,0,2.3208296341104737,test
+test_short_term_independent_ppo-1716458914-0,Server/policy_pools/test/short_term/models/independent_ppo-1716458914-0/run/gov_net.pt,independent_ppo,0,2.3208296341104737,test
+test_short_term_independent_ppo-1716458914-1,Server/policy_pools/test/short_term/models/independent_ppo-1716458914-1/run/gov_net.pt,independent_ppo,1,1.5331095483626451,test
+test_top_k_independent_ppo-1716458914-0,Server/policy_pools/test/top_k/models/independent_ppo-1716458914-0/run/gov_net.pt,independent_ppo,0,2.3208296341104737,test
+test3_long_term_independent_ppo-1716458914-0,Server/policy_pools/test3/long_term/models/independent_ppo-1716458914-0/run/gov_net.pt,independent_ppo,0,2.3208296341104737,test3
+test3_short_term_independent_ppo-1716458914-0,Server/policy_pools/test3/short_term/models/independent_ppo-1716458914-0/run/gov_net.pt,independent_ppo,0,2.3208296341104737,test3
+test3_short_term_independent_ppo-1716458914-1,Server/policy_pools/test3/short_term/models/independent_ppo-1716458914-1/run/gov_net.pt,independent_ppo,1,1.5331095483626451,test3
+test3_top_k_independent_ppo-1716458914-0,Server/policy_pools/test3/top_k/models/independent_ppo-1716458914-0/run/gov_net.pt,independent_ppo,0,2.3208296341104737,test3
+test4_long_term_independent_ppo-1716458914-0,Server/policy_pools/test4/long_term/models/independent_ppo-1716458914-0/run/gov_net.pt,independent_ppo,0,2.3208296341104737,test4
+test4_short_term_independent_ppo-1716458914-0,Server/policy_pools/test4/short_term/models/independent_ppo-1716458914-0/run/gov_net.pt,independent_ppo,0,2.3208296341104737,test4
+test4_short_term_independent_ppo-1716458914-1,Server/policy_pools/test4/short_term/models/independent_ppo-1716458914-1/run/gov_net.pt,independent_ppo,1,1.5331095483626451,test4
+test4_top_k_independent_ppo-1716458914-0,Server/policy_pools/test4/top_k/models/independent_ppo-1716458914-0/run/gov_net.pt,independent_ppo,0,2.3208296341104737,test4
