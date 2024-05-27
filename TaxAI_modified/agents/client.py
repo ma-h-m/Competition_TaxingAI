@@ -3,10 +3,10 @@ import os
 import zipfile
 
 SERVER_HOST = '127.0.0.1'
-SERVER_PORT = 5007
+SERVER_PORT = 5006
 BUFFER_SIZE = 4096
 SEPARATOR = "<SEPARATOR>"
-USER_ID = "test"
+USER_ID = "test5"
 
 def push_file(filepath):
     filename = os.path.basename(filepath)
@@ -56,7 +56,7 @@ def push_folder(folder_path, user_id=USER_ID):
                 relative_path = os.path.relpath(filepath, folder_path)
                 
                 # 检查文件是否已经存在于服务器上
-                if relative_path not in existing_files:
+                if file.endswith(".csv") or relative_path not in existing_files:
                     zipf.write(filepath, relative_path)
                 else:
                     print(f"File {relative_path} already exists on the server. Skipping...")
@@ -133,6 +133,6 @@ def fetch_random_models(num_models, user_id=USER_ID, dest_dir="TaxAI_modified/ag
 
 if __name__ == "__main__":
     # 示例用法
-    # initial_communicate_with_server(USER_ID)
-    # push_folder("/home/mhm/workspace/Competition_TaxingAI/TaxAI_modified/agents/model_pools")
-    fetch_random_models(user_id=USER_ID,num_models=5)
+    initial_communicate_with_server(USER_ID)
+    push_folder("/home/mhm/workspace/Competition_TaxingAI/TaxAI_modified/agents/model_pools")
+    # fetch_random_models(user_id=USER_ID,num_models=5)

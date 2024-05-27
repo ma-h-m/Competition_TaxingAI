@@ -4,7 +4,7 @@ from threading import Thread
 import zipfile
 
 SERVER_HOST = '0.0.0.0'
-SERVER_PORT = 5007
+SERVER_PORT = 5006
 BUFFER_SIZE = 4096
 SEPARATOR = "<SEPARATOR>"
 import pandas as pd
@@ -26,6 +26,18 @@ def extract_info_from_path(path):
     model_relative_path = '/'.join(path_parts[7 :])
     return model_relative_path, id_part
 
+## especially for merge_new_csv_to_server
+def extract_info_from_path2(path):
+    # 从路径中提取所需的信息
+    path_parts = path.split('/')
+    model_index = path_parts.index('models')
+    run_index = path_parts.index('run')
+    model_name = '/'.join(path_parts[model_index + 1:run_index])
+
+    id_part =  "_" + path_parts[model_index - 1] + "_" + model_name
+
+    model_relative_path = '/'.join(path_parts[4 :])
+    return model_relative_path, id_part
 def merge_csv_files():
     government_frames = []
     household_frames = []
@@ -66,6 +78,69 @@ def merge_csv_files():
     if household_frames:
         merged_hh_df = pd.concat(household_frames, ignore_index=True)
         merged_hh_df.to_csv(os.path.join(ROOT_DIR, 'log_household.csv'), index=False)
+
+
+# 定义合并新文件到现有CSV的函数
+
+def merge_new_csv_to_server(client_id, client_dir):
+    subfolders = ['long_term', 'short_term', 'top_k']
+    for subfolder in subfolders:
+        subfolder_path = os.path.join(client_dir, subfolder)
+        if os.path.exists(subfolder_path):
+            gov_csv_path = os.path.join(subfolder_path, 'log_government.csv')
+            hh_csv_path = os.path.join(subfolder_path, 'log_household.csv')
+            server_gov_csv_path = os.path.join(ROOT_DIR, 'log_government.csv')
+            server_hh_csv_path = os.path.join(ROOT_DIR, 'log_household.csv')
+
+            if os.path.exists(server_gov_csv_path):
+                existing_gov_df = pd.read_csv(server_gov_csv_path)
+            else:
+                existing_gov_df = pd.DataFrame()
+
+            if os.path.exists(server_hh_csv_path):
+                existing_hh_df = pd.read_csv(server_hh_csv_path)
+            else:
+                existing_hh_df = pd.DataFrame()
+
+            if os.path.exists(gov_csv_path):
+                df_gov = pd.read_csv(gov_csv_path)
+                df_gov['client_id'] = client_id
+                df_gov['path'] = df_gov['path'].apply(lambda x: os.path.join(subfolder, x))
+                df_gov['path'], df_gov['id'] = zip(*df_gov['path'].apply(extract_info_from_path2))
+                df_gov['path'] = df_gov['path'].apply(lambda x: os.path.join(ROOT_DIR, client_id , x))
+                df_gov["id"] = client_id + df_gov["id"]
+                df_gov.insert(0, 'id', df_gov.pop('id')) 
+
+                # 去除重复项
+                if not existing_gov_df.empty:
+                    df_gov = df_gov[~df_gov['id'].isin(existing_gov_df['id'])]
+
+                if not existing_gov_df.empty:
+                    merged_gov_df = pd.concat([existing_gov_df, df_gov], ignore_index=True)
+                else:
+                    merged_gov_df = df_gov
+
+                merged_gov_df.to_csv(server_gov_csv_path, index=False)
+
+            if os.path.exists(hh_csv_path):
+                df_hh = pd.read_csv(hh_csv_path)
+                df_hh['client_id'] = client_id
+                df_hh['path'] = df_hh['path'].apply(lambda x: os.path.join(subfolder, x))
+                df_hh['path'], df_hh['id'] = zip(*df_hh['path'].apply(extract_info_from_path2))
+                df_hh['path'] = df_hh['path'].apply(lambda x: os.path.join(ROOT_DIR, client_id, x))
+                df_hh["id"] = client_id + df_hh["id"]
+                df_hh.insert(0, 'id', df_hh.pop('id'))
+
+                # 去除重复项
+                if not existing_hh_df.empty:
+                    df_hh = df_hh[~df_hh['id'].isin(existing_hh_df['id'])]
+
+                if not existing_hh_df.empty:
+                    merged_hh_df = pd.concat([existing_hh_df, df_hh], ignore_index=True)
+                else:
+                    merged_hh_df = df_hh
+
+                merged_hh_df.to_csv(server_hh_csv_path, index=False)
 
 def handle_client(client_socket, client_address):
     print(f"[+] {client_address} connected.")
@@ -117,6 +192,9 @@ def handle_client(client_socket, client_address):
                         with zipfile.ZipFile(filepath, 'r') as zip_ref:
                             zip_ref.extractall(client_dir)
                         os.remove(filepath)
+                    
+                    # 合并新的CSV文件到服务器端的CSV文件
+                    merge_new_csv_to_server(client_id, client_dir)
                     
                     client_socket.send(f"RECEIVED{SEPARATOR}{filename}".encode())
                 else:
