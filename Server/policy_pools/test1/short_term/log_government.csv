@@ -1,0 +1,11 @@
+path,algo,epoch,score
+TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1716880432-1/run/gov_net.pt,independent_ppo,1,1.5331095483626451
+TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1716880432-2/run/gov_net.pt,independent_ppo,2,1.8814474992674968
+TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1716880432-3/run/gov_net.pt,independent_ppo,3,1.371620753452011
+TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1716880432-4/run/gov_net.pt,independent_ppo,4,1.611424263405614
+TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1716880432-5/run/gov_net.pt,independent_ppo,5,1.980259582873941
+TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1716880432-6/run/gov_net.pt,independent_ppo,6,1.8969597401362068
+TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1716880432-7/run/gov_net.pt,independent_ppo,7,2.4978574988429267
+TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1716880432-8/run/gov_net.pt,independent_ppo,8,1.684808365005961
+TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1716880432-9/run/gov_net.pt,independent_ppo,9,2.0298916088009693
+TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1716880432-10/run/gov_net.pt,independent_ppo,10,1.5487482438542177

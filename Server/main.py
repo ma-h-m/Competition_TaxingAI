@@ -12,19 +12,19 @@ import pandas as pd
 ROOT_DIR = "Server/policy_pools"
 if not os.path.exists(ROOT_DIR):
     os.makedirs(ROOT_DIR)
-
+import shutil
 ip_to_id = {}
-def extract_info_from_path(path):
-    # 从路径中提取所需的信息
-    path_parts = path.split('/')
-    model_index = path_parts.index('models')
-    run_index = path_parts.index('run')
-    model_name = '/'.join(path_parts[model_index + 1:run_index])
+# def extract_info_from_path(path):
+#     # 从路径中提取所需的信息
+#     path_parts = path.split('/')
+#     model_index = path_parts.index('models')
+#     run_index = path_parts.index('run')
+#     model_name = '/'.join(path_parts[model_index + 1:run_index])
 
-    id_part =  "_" + path_parts[model_index - 1] + "_" + model_name
+#     id_part =  "_" + path_parts[model_index - 1] + "_" + model_name
 
-    model_relative_path = '/'.join(path_parts[7 :])
-    return model_relative_path, id_part
+#     model_relative_path = '/'.join(path_parts[7 :])
+#     return model_relative_path, id_part
 
 ## especially for merge_new_csv_to_server
 def extract_info_from_path2(path):
@@ -38,46 +38,46 @@ def extract_info_from_path2(path):
 
     model_relative_path = '/'.join(path_parts[4 :])
     return model_relative_path, id_part
-def merge_csv_files():
-    government_frames = []
-    household_frames = []
+# def merge_csv_files():
+#     government_frames = []
+#     household_frames = []
 
-    for client_id in os.listdir(ROOT_DIR):
-        client_dir = os.path.join(ROOT_DIR, client_id)
-        if os.path.isdir(client_dir):
-            for subfolder in ['long_term', 'short_term', 'top_k']:
-                subfolder_path = os.path.join(client_dir, subfolder)
-                if os.path.exists(subfolder_path):
-                    gov_csv_path = os.path.join(subfolder_path, 'log_government.csv')
-                    hh_csv_path = os.path.join(subfolder_path, 'log_household.csv')
+#     for client_id in os.listdir(ROOT_DIR):
+#         client_dir = os.path.join(ROOT_DIR, client_id)
+#         if os.path.isdir(client_dir):
+#             for subfolder in ['long_term', 'short_term', 'top_k']:
+#                 subfolder_path = os.path.join(client_dir, subfolder)
+#                 if os.path.exists(subfolder_path):
+#                     gov_csv_path = os.path.join(subfolder_path, 'log_government.csv')
+#                     hh_csv_path = os.path.join(subfolder_path, 'log_household.csv')
                     
-                    if os.path.exists(gov_csv_path):
-                        df_gov = pd.read_csv(gov_csv_path)
-                        df_gov['client_id'] = client_id  # 可选择添加用于识别客户端的列
-                        df_gov['path'] = df_gov['path'].apply(lambda x: os.path.join(subfolder_path, x))
-                        df_gov['path'], df_gov['id'] = zip(*df_gov['path'].apply(extract_info_from_path))
-                        df_gov['path'] = df_gov['path'].apply(lambda x: os.path.join(client_dir, x))
-                        df_gov["id"] = client_id + df_gov["id"]
-                        government_frames.append(df_gov)
-                        df_gov.insert(0, 'id', df_gov.pop('id')) 
-                    if os.path.exists(hh_csv_path):
-                        df_hh = pd.read_csv(hh_csv_path)
-                        df_hh['client_id'] = client_id  # 可选择添加用于识别客户端的列
-                        df_hh['path'] = df_hh['path'].apply(lambda x: os.path.join(subfolder_path, x))
-                        df_hh['path'], df_hh['id'] = zip(*df_hh['path'].apply(extract_info_from_path))
-                        df_hh['path'] = df_hh['path'].apply(lambda x: os.path.join(client_dir, x))
-                        df_hh["id"] = client_id + df_hh["id"]
-                        household_frames.append(df_hh)
-                        df_hh.insert(0, 'id', df_hh.pop('id'))
+#                     if os.path.exists(gov_csv_path):
+#                         df_gov = pd.read_csv(gov_csv_path)
+#                         df_gov['client_id'] = client_id  # 可选择添加用于识别客户端的列
+#                         df_gov['path'] = df_gov['path'].apply(lambda x: os.path.join(subfolder_path, x))
+#                         df_gov['path'], df_gov['id'] = zip(*df_gov['path'].apply(extract_info_from_path))
+#                         df_gov['path'] = df_gov['path'].apply(lambda x: os.path.join(client_dir, x))
+#                         df_gov["id"] = client_id + df_gov["id"]
+#                         government_frames.append(df_gov)
+#                         df_gov.insert(0, 'id', df_gov.pop('id')) 
+#                     if os.path.exists(hh_csv_path):
+#                         df_hh = pd.read_csv(hh_csv_path)
+#                         df_hh['client_id'] = client_id  # 可选择添加用于识别客户端的列
+#                         df_hh['path'] = df_hh['path'].apply(lambda x: os.path.join(subfolder_path, x))
+#                         df_hh['path'], df_hh['id'] = zip(*df_hh['path'].apply(extract_info_from_path))
+#                         df_hh['path'] = df_hh['path'].apply(lambda x: os.path.join(client_dir, x))
+#                         df_hh["id"] = client_id + df_hh["id"]
+#                         household_frames.append(df_hh)
+#                         df_hh.insert(0, 'id', df_hh.pop('id'))
                         
     
-    if government_frames:
-        merged_gov_df = pd.concat(government_frames, ignore_index=True)
-        merged_gov_df.to_csv(os.path.join(ROOT_DIR, 'log_government.csv'), index=False)
+#     if government_frames:
+#         merged_gov_df = pd.concat(government_frames, ignore_index=True)
+#         merged_gov_df.to_csv(os.path.join(ROOT_DIR, 'log_government.csv'), index=False)
     
-    if household_frames:
-        merged_hh_df = pd.concat(household_frames, ignore_index=True)
-        merged_hh_df.to_csv(os.path.join(ROOT_DIR, 'log_household.csv'), index=False)
+#     if household_frames:
+#         merged_hh_df = pd.concat(household_frames, ignore_index=True)
+#         merged_hh_df.to_csv(os.path.join(ROOT_DIR, 'log_household.csv'), index=False)
 
 
 # 定义合并新文件到现有CSV的函数
@@ -109,7 +109,18 @@ def merge_new_csv_to_server(client_id, client_dir):
                 df_gov['path'], df_gov['id'] = zip(*df_gov['path'].apply(extract_info_from_path2))
                 df_gov['path'] = df_gov['path'].apply(lambda x: os.path.join(ROOT_DIR, client_id , x))
                 df_gov["id"] = client_id + df_gov["id"]
+                df_gov["evaluated_times"] = 0
                 df_gov.insert(0, 'id', df_gov.pop('id')) 
+
+
+                # 获取所有在CSV中记录的路径
+                recorded_paths = set()
+
+                # 处理每个路径，获取其两层父目录
+                for path in df_gov['path'].tolist():
+                    parent_dir = os.path.dirname(path)   # 获取第一层父目录
+                    grandparent_dir = os.path.dirname(parent_dir)  # 获取第二层父目录
+                    recorded_paths.add(grandparent_dir)  # 添加到集合中
 
                 # 去除重复项
                 if not existing_gov_df.empty:
@@ -122,6 +133,8 @@ def merge_new_csv_to_server(client_id, client_dir):
 
                 merged_gov_df.to_csv(server_gov_csv_path, index=False)
 
+
+
             if os.path.exists(hh_csv_path):
                 df_hh = pd.read_csv(hh_csv_path)
                 df_hh['client_id'] = client_id
@@ -130,6 +143,15 @@ def merge_new_csv_to_server(client_id, client_dir):
                 df_hh['path'] = df_hh['path'].apply(lambda x: os.path.join(ROOT_DIR, client_id, x))
                 df_hh["id"] = client_id + df_hh["id"]
                 df_hh.insert(0, 'id', df_hh.pop('id'))
+                df_hh["evaluated_times"] = 0
+
+                # 获取所有在CSV中记录的路径
+
+
+                for path in df_hh['path'].tolist():
+                    parent_dir = os.path.dirname(path)  # 获取第一层父目录
+                    grandparent_dir = os.path.dirname(parent_dir)  # 获取第二层父目录
+                    recorded_paths.add(grandparent_dir)  # 添加到集合中
 
                 # 去除重复项
                 if not existing_hh_df.empty:
@@ -141,6 +163,21 @@ def merge_new_csv_to_server(client_id, client_dir):
                     merged_hh_df = df_hh
 
                 merged_hh_df.to_csv(server_hh_csv_path, index=False)
+
+
+                models_path = os.path.join(subfolder_path, 'models')
+            # 检查路径并删除未记录的文件夹
+                
+                for folder_name in os.listdir(models_path):
+                    folder_path = os.path.join(subfolder_path,'models', folder_name)
+                    # 仅处理子文件夹
+                    if os.path.isdir(folder_path):
+                        # 检查该子文件夹是否在recorded_paths中
+                        if folder_path not in recorded_paths:
+                            # 移除不在recorded_paths中的文件夹
+                            shutil.rmtree(folder_path)
+                            print(f'Removed folder: {folder_path}')
+
 
 def handle_client(client_socket, client_address):
     print(f"[+] {client_address} connected.")

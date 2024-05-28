@@ -1,0 +1,3 @@
+path,algo,epoch,score
+TaxAI_modified/agents/model_pools/long_term/models/independent_ppo-1716880432-0/run/gov_net.pt,independent_ppo,0,2.3208296341104737
+TaxAI_modified/agents/model_pools/long_term/models/independent_ppo-1716880432-10/run/gov_net.pt,independent_ppo,10,1.5487482438542177

@@ -5,9 +5,9 @@ import torch
 from torch import optim
 import os,sys
 sys.path.append(os.path.abspath('../..'))
-from agents.model_self.models import mlp_net
-from agents.model_self.utils import select_actions, evaluate_actions
-from agents.model_self.log_path import make_logpath
+from .models import mlp_net                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+from .utils import select_actions, evaluate_actions
+from .log_path import make_logpath
 from datetime import datetime
 from env.evaluation import save_parameters
 import os
@@ -15,7 +15,7 @@ import copy
 import wandb
 import pickle
 import time
-from agents.model_self.model_pools_update import update_short_term_policy_pool, update_long_term_policy_pool, update_top_k_policy_pool
+from .model_pools_update import update_short_term_policy_pool, update_long_term_policy_pool, update_top_k_policy_pool
 def load_params_from_file(filename):
     with open(filename, 'rb') as f:
         params = pickle.load(f)
@@ -37,7 +37,7 @@ def save_args(path, args):
 
 
 class agent:
-    def __init__(self, envs, args, algo_name = "independent_ppo"):
+    def __init__(self, envs, args, algo_name = "independent_ppo", house_net_path = None, gov_net_path = None):
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args
@@ -56,6 +56,14 @@ class agent:
         # define the optimizer...
         self.house_optimizer = optim.Adam(self.households_net.parameters(), self.args.p_lr, eps=self.args.eps)
         self.gov_optimizer = optim.Adam(self.gov_net.parameters(), self.args.p_lr, eps=self.args.eps)
+        
+        # Load pre-trained weights if provided
+        if house_net_path:
+            self.load_pretrained_weights(house_net_path, "households")
+        if gov_net_path:
+            self.load_pretrained_weights(gov_net_path, "government")
+        
+
 
         # get the observation
         # self.batch_ob_shape = (self.args.n_households * self.args.epoch_length, ) + self.envs.households.observation_space.shape
@@ -78,6 +86,16 @@ class agent:
         #     job_type="training",
         #     reinit=True
         # )
+        
+    def load_pretrained_weights(self, model_path, agent_type):
+        if agent_type == "households":
+            self.households_net.load_state_dict(torch.load(model_path))
+            self.households_old_net = copy.deepcopy(self.households_net)
+        elif agent_type == "government":
+            self.gov_net.load_state_dict(torch.load(model_path))
+            self.gov_old_net = copy.deepcopy(self.gov_net)
+        else:
+            raise ValueError("Unknown agent type. Choose 'households' or 'government'.")
 
     def _get_tensor_inputs(self, obs):
         obs_tensor = torch.tensor(obs, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu').unsqueeze(0)
