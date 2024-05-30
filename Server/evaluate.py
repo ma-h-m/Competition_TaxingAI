@@ -21,16 +21,18 @@ import tempfile
 def dynamic_import_class(module_name, file_path, class_name):
     # 获取文件所在目录的父目录的父目录，即顶级包目录
     module_dir = os.path.dirname(file_path)
-    import sys    
-    print("In module products sys.path[0], __package__ ==", sys.path[0], __package__)
-    # top_level_package_dir = os.path.abspath(os.path.join(module_dir, os.pardir, os.pardir, os.pardir))
-    top_level_package_dir = "/home/mhm/workspace/Competition_TaxingAI/Server/policy_pools/test1/long_term/models/independent_ppo-1716880432-0/utils"
-    # 将顶级包目录添加到 sys.path
-    sys.path.insert(0, top_level_package_dir)
+    last_dir = os.path.basename(module_dir)
+    top_level_package_dir = os.path.abspath(os.path.join(module_dir, os.pardir, os.pardir, os.pardir))
     
     # 动态加载模块
     spec = importlib.util.spec_from_file_location(module_name, file_path)
     module = importlib.util.module_from_spec(spec)
+    
+    # 设置父包，以支持相对导入
+    setattr(module, '__package__', 'policy_pools.test1.long_term.models.' + last_dir)
+    
+    # 将顶级包目录添加到 sys.path
+    sys.path.insert(0, top_level_package_dir)
     sys.modules[module_name] = module
     spec.loader.exec_module(module)
     
@@ -41,15 +43,27 @@ def dynamic_import_class(module_name, file_path, class_name):
     sys.path.pop(0)
     
     return cls
-
 def _get_code_path(model_path):
     return os.path.join(os.path.dirname(os.path.dirname(model_path)), "agent.py")
-# 现版本household和gov的模型是耦合的，没办法单独加载一个类
-# TODO:分离household和gov的模型
-def load_model(model_path, env, cfg):
+
+def load_model(model_path, env, cfg): #agent_type: "households" or "government"
+    if model_path.endswith("house_net.pt"):
+        agent_type = "households"
+    elif model_path.endswith("gov_net.pt"):
+        agent_type = "government"
+    else:
+        raise ValueError("Invalid model path")
+    
     path = os.path.dirname(os.path.dirname(model_path))
     Agent = dynamic_import_class("agent", _get_code_path(model_path), "agent")
-    agent = Agent(env, cfg, os.join(path, "run","house_net.pt"), os.join(path, "run","gov_net.pt"))
+    if agent_type == "households":
+        agent = Agent(env, cfg, house_net_path=model_path, test=True)
+    else:
+        agent = Agent(env, cfg, gov_net_path=model_path, test=True)
+
+    # agent.load_pretrained_weights(model_path, agent_type)
+
+    # agent = Agent(env, cfg, os.path.join(path, "run","house_net.pt"), os.path.join(path, "run","gov_net.pt"))
     return agent
 
 def select_policy(policy_pool: pd.DataFrame, env, cfg, temperature=1.0):
@@ -77,7 +91,24 @@ def evaluate_policy_pools(cfg_path = "default"):
     env = economic_society(yaml_cfg.Environment)
     government_policy_pool = pd.read_csv(f"{ROOT_DIR}/log_government.csv")
     household_policy_pool = pd.read_csv(f"{ROOT_DIR}/log_household.csv")
-    # select_policy(government_policy_pool, env, yaml_cfg.Trainer)
-    agent = load_model(government_policy_pool.iloc[0]['path'], env, yaml_cfg.Trainer)
+    # government_agent = select_policy(government_policy_pool, env, yaml_cfg.Trainer)
 
-evaluate_policy_pools()
+    government_agent_num = 0
+    households_agent_num = 0
+    for entity in yaml_cfg.Environment.Entities:
+        if entity.entity_name == "government":
+            government_agent_num = entity.entity_args.n
+        if entity.entity_name == "household":
+            households_agent_num = entity.entity_args.n
+    government_agents = []
+    for i in range(government_agent_num):
+        government_agents.append(select_policy(government_policy_pool, env, yaml_cfg.Trainer))
+    household_agents = []
+    for i in range(households_agent_num):
+        household_agents.append(select_policy(household_policy_pool, env, yaml_cfg.Trainer))
+    env.reset()
+
+    return government_agents, household_agents
+    
+
+evaluate_policy_pools('n4')
