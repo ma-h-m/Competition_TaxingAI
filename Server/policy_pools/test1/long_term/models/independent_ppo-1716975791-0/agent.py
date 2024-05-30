@@ -165,18 +165,27 @@ class agent:
         global_obs[4] /= 1e5
         private_obs[:, 1] /= 1e5
         return global_obs, private_obs
-    
+    def observation_wrapper_with_only_one_houselhold(self, global_obs, private_obs):
+        # global
+        global_obs[0] /= 1e7
+        global_obs[1] /= 1e5
+        global_obs[3] /= 1e5
+        global_obs[4] /= 1e5
+        private_obs[1] /= 1e5
+        return global_obs, private_obs   
 # for evaluation with mutiple kinds of agents
     def get_one_action(self, global_obs, private_obs, isHousehold=True):
-        global_obs, private_obs = self.observation_wrapper(global_obs, private_obs)
-        obs = self.obs_concate_numpy(global_obs, private_obs, update=False)
-        obs = self._get_tensor_inputs(obs)
+        global_obs, private_obs = self.observation_wrapper_with_only_one_houselhold(global_obs, private_obs)
+        
         if isHousehold:
+            # obs = self.obs_concate_numpy(global_obs, private_obs, update=False) # 这里不对，不能concate
+            obs = np.concatenate((global_obs, private_obs), axis=-1)
+            obs = self._get_tensor_inputs(obs)
             values, pis = self.households_net(obs)
             action = select_actions(pis)
             action = self.action_wrapper(action)
         else:
-            values, pis = self.gov_net(obs)
+            values, pis = self.gov_net(self._get_tensor_inputs(global_obs))
             action = select_actions(pis)
             action = self.action_wrapper(action)
 

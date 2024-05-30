@@ -2,3 +2,4 @@ path,algo,epoch,score
 TaxAI_modified/agents/model_pools/top_k/models/independent_ppo-1716975791-0/run/house_net.pt,independent_ppo,0,-237.21137639152093
 TaxAI_modified/agents/model_pools/top_k/models/independent_ppo-1716975791-10/run/house_net.pt,independent_ppo,10,-354.4448499566947
 TaxAI_modified/agents/model_pools/top_k/models/independent_ppo-1716975791-20/run/house_net.pt,independent_ppo,20,-406.75175500285934
+TaxAI_modified/agents/model_pools/top_k/models/independent_ppo-1717060147-0/run/house_net.pt,independent_ppo,0,-237.21137639152093
