@@ -1,4 +1,4 @@
-n_households: 10
+n_households: 4
 log_std_min: -20
 log_std_max: 2
 hidden_size: 128

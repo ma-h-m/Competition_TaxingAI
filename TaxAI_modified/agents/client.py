@@ -131,8 +131,8 @@ def fetch_random_models(num_models, user_id=USER_ID, dest_dir="TaxAI_modified/ag
     client_socket.close()
 
 
-if __name__ == "__main__":
-    # 示例用法
-    initial_communicate_with_server(USER_ID)
-    push_folder("/home/mhm/workspace/Competition_TaxingAI/TaxAI_modified/agents/model_pools")
-    # fetch_random_models(user_id=USER_ID,num_models=5)
+# if __name__ == "__main__":
+#     # 示例用法
+#     initial_communicate_with_server(USER_ID)
+#     push_folder("/home/mhm/workspace/Competition_TaxingAI/TaxAI_modified/agents/model_pools")
+#     # fetch_random_models(user_id=USER_ID,num_models=5)
