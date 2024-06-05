@@ -15,7 +15,8 @@ import copy
 import wandb
 import pickle
 import time
-from .model_pools_update import update_short_term_policy_pool, update_long_term_policy_pool, update_top_k_policy_pool
+from .model_pools_update import update_short_term_policy_pool, update_long_term_policy_pool#, update_top_k_policy_pool
+from .client import initial_communicate_with_server, push_folder, fetch_random_models
 def load_params_from_file(filename):
     with open(filename, 'rb') as f:
         params = pickle.load(f)
@@ -84,6 +85,7 @@ class agent:
         self.algo_name = algo_name
         if not test:
             save_args(path=self.model_path, args=self.args)
+        
         # wandb.init(
         #     # config=self.args,
         #     project="AI_TaxingPolicy",
@@ -201,6 +203,13 @@ class agent:
                 action = self.gov_action_max * (action * 2 - 1)
         
         return action
+    
+    def select_actions(self, pis):
+        action = select_actions(pis)
+        action = self.action_wrapper(action)
+        action = self.gov_action_max * (action * 2 - 1)
+        return action
+    
     def get_one_pis(self, global_obs, private_obs, isHousehold=True):
         global_obs, private_obs = self.observation_wrapper_with_only_one_houselhold(global_obs, private_obs)
         with torch.no_grad():
@@ -320,8 +329,13 @@ class agent:
                 
                 if update % self.args.long_term_policy_update_freq == 0:
                     update_long_term_policy_pool(self.args.long_term_policy_pool_size, epoch=update, government_score=mean_gov_rewards, household_score=mean_house_rewards, algo= self.algo_name, id=self.identifier)
-                if update % self.args.top_k_policy_update_freq == 0:
-                    update_top_k_policy_pool(self.args.top_k_policy_pool_size, epoch=update, government_score=mean_gov_rewards, household_score=mean_house_rewards, algo= self.algo_name, id=self.identifier)
+                # if update % self.args.top_k_policy_update_freq == 0:
+                #     update_top_k_policy_pool(self.args.top_k_policy_pool_size, epoch=update, government_score=mean_gov_rewards, household_score=mean_house_rewards, algo= self.algo_name, id=self.identifier)
+                if update % self.args.freq_of_pushing_moodels_to_server == 0:
+                    push_folder(self.model_path, self.identifier)
+                    
+                if update % self.args.freq_of_fetching_random_models == 0:
+                    fetch_random_models(gov_model_num = 1, household_model_num = 4, dest_dir="TaxAI_modified/agents/model_pools/models_from_server")
 
 
                 

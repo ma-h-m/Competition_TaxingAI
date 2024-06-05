@@ -45,9 +45,11 @@ def parse_args():
     parser.add_argument('--long_term_policy_update_freq', type=int, default=10, help='interval of updating long term policy pool')
     parser.add_argument("--long_term_policy_pool_size", type=int, default=30000, help="size of long term policy pool")
     parser.add_argument("--short_term_policy_pool_size", type=int, default=10, help="size of short term policy pool")
-    parser.add_argument("--top_k_policy_update_freq", type=int, default=10, help="interval of updating top k policy pool")
-    parser.add_argument("--top_k_policy_pool_size", type=int, default=10, help="size of top k policy pool")
-
+    # parser.add_argument("--top_k_policy_update_freq", type=int, default=10, help="interval of updating top k policy pool")
+    # parser.add_argument("--top_k_policy_pool_size", type=int, default=10, help="size of top k policy pool")
+    parser.add_argument("--freq_of_pushing_moodels_to_server", type=int, default=10, help="frequency of pushing models to server")
+    parser.add_argument("--freq_of_pushing_moodels_to_server", type=int, default=10, help="frequency of pushing models to server")
+    parser.add_argument("--freq_of_fetching_random_models", type=int, default=10, help="frequency of fetching random models from server")
     args = parser.parse_args()
     return args
 
@@ -95,8 +97,9 @@ if __name__ == '__main__':
     yaml_cfg.Trainer["long_term_policy_update_freq"] = args.long_term_policy_update_freq
     yaml_cfg.Trainer["long_term_policy_pool_size"] = args.long_term_policy_pool_size
     yaml_cfg.Trainer["short_term_policy_pool_size"] = args.short_term_policy_pool_size
-    yaml_cfg.Trainer["top_k_policy_update_freq"] = args.top_k_policy_update_freq
-    yaml_cfg.Trainer["top_k_policy_pool_size"] = args.top_k_policy_pool_size
+    yaml_cfg.Trainer["freq_of_pushing_moodels_to_server"] = args.freq_of_pushing_moodels_to_server
+    # yaml_cfg.Trainer["top_k_policy_update_freq"] = args.top_k_policy_update_freq
+    # yaml_cfg.Trainer["top_k_policy_pool_size"] = args.top_k_policy_pool_size
 
     
     set_seeds(yaml_cfg.seed, cuda=yaml_cfg.Trainer["cuda"])
