@@ -48,6 +48,7 @@ def dynamic_import_class(module_name, file_path, class_name):
     sys.path.pop(0)
     
     return cls
+
 def _get_code_path(model_path):
     return os.path.join(os.path.dirname(os.path.dirname(model_path)), "agent.py")
 
@@ -329,6 +330,7 @@ def evaluate_policy_pools(cfg_path = "n4", lock = None, temperature = 100.0):
             # Debugging with full model agent
             # Get government actions
             government_actions = government_agents[0].get_one_action(global_obs, private_obs, isHousehold=False)
+            
             household_actions = []
             for agent, private_ob in zip(household_agents, private_obs):
                 household_actions.append(agent.get_one_action(global_obs, private_ob, isHousehold=True))

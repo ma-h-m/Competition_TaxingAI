@@ -151,6 +151,8 @@ def dynamic_import_class(module_name, file_path, class_name):
     
     # 移除顶级包目录
     sys.path.pop(0)
+    return cls
+
 import pandas as pd
 from scipy.special import softmax
 def select_policy_from_models_from_server(log_path, env, cfg, temperature=100.0):
