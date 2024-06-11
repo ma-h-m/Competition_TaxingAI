@@ -48,7 +48,7 @@ def parse_args():
     # parser.add_argument("--top_k_policy_update_freq", type=int, default=10, help="interval of updating top k policy pool")
     # parser.add_argument("--top_k_policy_pool_size", type=int, default=10, help="size of top k policy pool")
     parser.add_argument("--freq_of_pushing_moodels_to_server", type=int, default=10, help="frequency of pushing models to server")
-    parser.add_argument("--freq_of_pushing_moodels_to_server", type=int, default=10, help="frequency of pushing models to server")
+
     parser.add_argument("--freq_of_fetching_random_models", type=int, default=10, help="frequency of fetching random models from server")
     args = parser.parse_args()
     return args

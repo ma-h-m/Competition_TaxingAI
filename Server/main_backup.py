@@ -5,7 +5,7 @@ from threading import Thread
 import zipfile
 
 SERVER_HOST = '0.0.0.0'
-SERVER_PORT = 5006
+SERVER_PORT = 5005
 BUFFER_SIZE = 4096
 SEPARATOR = "<SEPARATOR>"
 import pandas as pd

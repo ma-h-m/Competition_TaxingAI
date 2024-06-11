@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 import zipfile
 
 SERVER_HOST = '0.0.0.0'
-SERVER_PORT = 5005
+SERVER_PORT = 5004
 BUFFER_SIZE = 4096
 SEPARATOR = "<SEPARATOR>"
 import pandas as pd
@@ -400,8 +400,7 @@ def main():
     server_socket.listen(5)
     print(f"[*] Listening on {SERVER_HOST}:{SERVER_PORT}")
     stop_event = Event()
-    # evaluate_thread = Thread(target=evaluate_existing_policies, args=(stop_event,))
-    # evaluate_thread.start()
+
     evaluationg_thread_num = 5
     with ThreadPoolExecutor(max_workers=10) as executor:
         try:

@@ -3,7 +3,7 @@ import os
 import zipfile
 
 SERVER_HOST = '127.0.0.1'
-SERVER_PORT = 5005
+SERVER_PORT = 5004
 BUFFER_SIZE = 4096
 SEPARATOR = "<SEPARATOR>"
 USER_ID = "test2"
@@ -131,9 +131,9 @@ def fetch_random_models(gov_model_num = 1, household_model_num = 4, user_id=USER
     client_socket.close()
 
 
-# if __name__ == "__main__":
-#     # 示例用法
-#     initial_communicate_with_server(USER_ID)
-#     push_folder("/home/mhm/workspace/Competition_TaxingAI/TaxAI_modified/agents/model_pools")
+if __name__ == "__main__":
+    # 示例用法
+    initial_communicate_with_server(USER_ID)
+    # push_folder("/home/mhm/workspace/Competition_TaxingAI/TaxAI_modified/agents/model_pools")
 
-    # fetch_random_models(user_id=USER_ID)
+    fetch_random_models(user_id=USER_ID)

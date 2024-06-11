@@ -95,7 +95,7 @@ def select_policy(policy_pool: pd.DataFrame, env, cfg, temperature=100.0):
     np.random.seed()
     selected_index = np.random.choice(policy_pool.index, p=probabilities)
     
-    # selected_index = 0 # for debug
+    selected_index = 0 # for debug
     # print(f"Selected index: {selected_index}")
     selected_policy = policy_pool.loc[selected_index]
     selected_policy_path = selected_policy['path']
@@ -131,130 +131,130 @@ def evaluate_one_model_in_policy_pools(cfg_path = "default", selected_index = 0)
     
     agent.test()
     
-def tmp_debug_func(full_model_agent, government_agents, household_agents, env):
-    random.seed(0)
-    torch.manual_seed(0)
-    global_obs, private_obs = env.reset()
+# def tmp_debug_func(full_model_agent, government_agents, household_agents, env):
+#     random.seed(0)
+#     torch.manual_seed(0)
+#     global_obs, private_obs = env.reset()
 
-    # gov_reward = 0
-    # mean_house_reward = 0
-    # step_count = 0
-    # mean_tax = []
-    # mean_wealth = []
-    # mean_post_income = []
-    # gdp = []
-    # income_gini = []
-    # wealth_gini = []
-    # house_reward = [0 for _ in range(len(household_agents))]
-    # done = False
+#     # gov_reward = 0
+#     # mean_house_reward = 0
+#     # step_count = 0
+#     # mean_tax = []
+#     # mean_wealth = []
+#     # mean_post_income = []
+#     # gdp = []
+#     # income_gini = []
+#     # wealth_gini = []
+#     # house_reward = [0 for _ in range(len(household_agents))]
+#     # done = False
 
-    episode_gov_reward = 0
-    episode_mean_house_reward = 0
-    step_count = 0
-    episode_mean_tax = []
-    episode_mean_wealth = []
-    episode_mean_post_income = []
-    episode_gdp = []
-    episode_income_gini = []
-    episode_wealth_gini = []
-    households_agent_num = len(household_agents)
-    episode_house_reward = [0 for _ in range(households_agent_num)]
-    done = False
-    # full_model_agent.env = copy.deepcopy(env)
-    while not done:
+#     episode_gov_reward = 0
+#     episode_mean_house_reward = 0
+#     step_count = 0
+#     episode_mean_tax = []
+#     episode_mean_wealth = []
+#     episode_mean_post_income = []
+#     episode_gdp = []
+#     episode_income_gini = []
+#     episode_wealth_gini = []
+#     households_agent_num = len(household_agents)
+#     episode_house_reward = [0 for _ in range(households_agent_num)]
+#     done = False
+#     # full_model_agent.env = copy.deepcopy(env)
+#     while not done:
 
-    #     with torch.no_grad():
-    #         tmp_global_obs = copy.deepcopy(global_obs)
-    #         tmp_private_obs = copy.deepcopy(private_obs)
-    #         tmp_global_obs, tmp_private_obs = full_model_agent.observation_wrapper(tmp_global_obs, tmp_private_obs)
-    #         # action = full_model_agent._evaluate_get_action(tmp_global_obs, tmp_private_obs)
-    #         pis = full_model_agent._evaluate_get_pis(tmp_global_obs, tmp_private_obs)
-    #         # random.seed(0)
-    #         tmp_action = full_model_agent._evaluate_get_action(tmp_global_obs, tmp_private_obs)
+#     #     with torch.no_grad():
+#     #         tmp_global_obs = copy.deepcopy(global_obs)
+#     #         tmp_private_obs = copy.deepcopy(private_obs)
+#     #         tmp_global_obs, tmp_private_obs = full_model_agent.observation_wrapper(tmp_global_obs, tmp_private_obs)
+#     #         # action = full_model_agent._evaluate_get_action(tmp_global_obs, tmp_private_obs)
+#     #         pis = full_model_agent._evaluate_get_pis(tmp_global_obs, tmp_private_obs)
+#     #         # random.seed(0)
+#     #         tmp_action = full_model_agent._evaluate_get_action(tmp_global_obs, tmp_private_obs)
 
 
 
-        # random.seed(0)
-        government_actions = government_agents[0].get_one_action(global_obs, private_obs, isHousehold=False)
-        # Get household actions
-        # household_actions = [
-        #     agent.get_one_action(global_obs, private_ob, isHousehold=True) 
-        #     for agent, private_ob in zip(household_agents, private_obs)
-        # ]
-        household_pis = [
-            agent.get_one_pis(global_obs, private_ob, isHousehold=True)
-            for agent, private_ob in zip(household_agents, private_obs)
-        ]
-        # household_actions =household_agents[0].select_actions(household_pis)
-        tmp_means = [item[0] for item in household_pis]
-        tmp_stds = [item[1] for item in household_pis]
+#         # random.seed(0)
+#         government_actions = government_agents[0].get_one_action(global_obs, private_obs, isHousehold=False)
+#         # Get household actions
+#         # household_actions = [
+#         #     agent.get_one_action(global_obs, private_ob, isHousehold=True) 
+#         #     for agent, private_ob in zip(household_agents, private_obs)
+#         # ]
+#         household_pis = [
+#             agent.get_one_pis(global_obs, private_ob, isHousehold=True)
+#             for agent, private_ob in zip(household_agents, private_obs)
+#         ]
+#         # household_actions =household_agents[0].select_actions(household_pis)
+#         tmp_means = [item[0] for item in household_pis]
+#         tmp_stds = [item[1] for item in household_pis]
 
-        # 将列表转化为单个张量
-        mean_tensor = torch.cat(tmp_means).unsqueeze(0)
-        std_tensor = torch.cat(tmp_stds).unsqueeze(0)
-        household_actions = household_agents[0].select_actions((mean_tensor, std_tensor))
+#         # 将列表转化为单个张量
+#         mean_tensor = torch.cat(tmp_means).unsqueeze(0)
+#         std_tensor = torch.cat(tmp_stds).unsqueeze(0)
+#         household_actions = household_agents[0].select_actions((mean_tensor, std_tensor))
         
-        # Construct action dictionary
-        action_dict = {
-            "government": np.array(government_actions),  
-            "Household": np.array(household_actions)
-        }
+#         # Construct action dictionary
+#         action_dict = {
+#             "government": np.array(government_actions),  
+#             "Household": np.array(household_actions)
+#         }
         
-        # Perform one step in the environment
-        next_global_obs, next_private_obs, gov_reward, house_reward, done = env.step(action_dict)
-        # Update observations
-        global_obs = next_global_obs
-        private_obs = next_private_obs
+#         # Perform one step in the environment
+#         next_global_obs, next_private_obs, gov_reward, house_reward, done = env.step(action_dict)
+#         # Update observations
+#         global_obs = next_global_obs
+#         private_obs = next_private_obs
         
-        # Accumulate rewards and metrics
-        step_count += 1
-        episode_gov_reward += gov_reward
-        episode_mean_house_reward += np.mean(house_reward)
-        episode_mean_tax.append(np.mean(env.tax_array))
-        episode_mean_wealth.append(np.mean(env.households.at_next))
-        episode_mean_post_income.append(np.mean(env.post_income))
-        episode_gdp.append(env.per_household_gdp)
-        episode_income_gini.append(env.income_gini)
-        episode_wealth_gini.append(env.wealth_gini)
-    print(f"episode_gov_reward: {episode_gov_reward}, episode_mean_house_reward: {episode_mean_house_reward}, step_count: {step_count}, episode_mean_tax: {np.mean(episode_mean_tax)}, episode_mean_wealth: {np.mean(episode_mean_wealth)}, episode_mean_post_income: {np.mean(episode_mean_post_income)}, episode_gdp: {np.mean(episode_gdp)}, episode_income_gini: {np.mean(episode_income_gini)}, episode_wealth_gini: {np.mean(episode_wealth_gini)}")
+#         # Accumulate rewards and metrics
+#         step_count += 1
+#         episode_gov_reward += gov_reward
+#         episode_mean_house_reward += np.mean(house_reward)
+#         episode_mean_tax.append(np.mean(env.tax_array))
+#         episode_mean_wealth.append(np.mean(env.households.at_next))
+#         episode_mean_post_income.append(np.mean(env.post_income))
+#         episode_gdp.append(env.per_household_gdp)
+#         episode_income_gini.append(env.income_gini)
+#         episode_wealth_gini.append(env.wealth_gini)
+#     print(f"episode_gov_reward: {episode_gov_reward}, episode_mean_house_reward: {episode_mean_house_reward}, step_count: {step_count}, episode_mean_tax: {np.mean(episode_mean_tax)}, episode_mean_wealth: {np.mean(episode_mean_wealth)}, episode_mean_post_income: {np.mean(episode_mean_post_income)}, episode_gdp: {np.mean(episode_gdp)}, episode_income_gini: {np.mean(episode_income_gini)}, episode_wealth_gini: {np.mean(episode_wealth_gini)}")
 
-    episode_gov_reward = 0
-    episode_mean_house_reward = 0
-    step_count = 0
-    episode_mean_tax = []
-    episode_mean_wealth = []
-    episode_mean_post_income = []
-    episode_gdp = []
-    episode_income_gini = []
-    episode_wealth_gini = []
-    done = False
-    global_obs, private_obs = full_model_agent.observation_wrapper(global_obs, private_obs)
+#     episode_gov_reward = 0
+#     episode_mean_house_reward = 0
+#     step_count = 0
+#     episode_mean_tax = []
+#     episode_mean_wealth = []
+#     episode_mean_post_income = []
+#     episode_gdp = []
+#     episode_income_gini = []
+#     episode_wealth_gini = []
+#     done = False
+#     global_obs, private_obs = full_model_agent.observation_wrapper(global_obs, private_obs)
 
-    while True:
-        with torch.no_grad():
-            action = full_model_agent._evaluate_get_action(global_obs, private_obs)
-            next_global_obs, next_private_obs, gov_reward, house_reward, done = env.step(action) #full_model_agent.eval_env.step(action)
-            # another_next_global_obs, another_next_private_obs, another_gov_reward, another_house_reward, another_done = env.step(action)
-            # another_another_next_global_obs, another_another_next_private_obs, another_another_gov_reward, another_another_house_reward, another_another_done = full_model_agent.envs.step(action)
-            next_global_obs, next_private_obs = full_model_agent.observation_wrapper(next_global_obs, next_private_obs)
+#     while True:
+#         with torch.no_grad():
+#             action = full_model_agent._evaluate_get_action(global_obs, private_obs)
+#             next_global_obs, next_private_obs, gov_reward, house_reward, done = env.step(action) #full_model_agent.eval_env.step(action)
+#             # another_next_global_obs, another_next_private_obs, another_gov_reward, another_house_reward, another_done = env.step(action)
+#             # another_another_next_global_obs, another_another_next_private_obs, another_another_gov_reward, another_another_house_reward, another_another_done = full_model_agent.envs.step(action)
+#             next_global_obs, next_private_obs = full_model_agent.observation_wrapper(next_global_obs, next_private_obs)
 
-        step_count += 1
-        # Accumulate rewards and metrics
-        step_count += 1
-        episode_gov_reward += gov_reward
-        episode_mean_house_reward += np.mean(house_reward)
-        episode_mean_tax.append(np.mean(env.tax_array))
-        episode_mean_wealth.append(np.mean(env.households.at_next))
-        episode_mean_post_income.append(np.mean(env.post_income))
-        episode_gdp.append(env.per_household_gdp)
-        episode_income_gini.append(env.income_gini)
-        episode_wealth_gini.append(env.wealth_gini)
-        if done:
-            break
+#         step_count += 1
+#         # Accumulate rewards and metrics
+#         step_count += 1
+#         episode_gov_reward += gov_reward
+#         episode_mean_house_reward += np.mean(house_reward)
+#         episode_mean_tax.append(np.mean(env.tax_array))
+#         episode_mean_wealth.append(np.mean(env.households.at_next))
+#         episode_mean_post_income.append(np.mean(env.post_income))
+#         episode_gdp.append(env.per_household_gdp)
+#         episode_income_gini.append(env.income_gini)
+#         episode_wealth_gini.append(env.wealth_gini)
+#         if done:
+#             break
 
-        global_obs = next_global_obs
-        private_obs = next_private_obs
-    print(f"episode_gov_reward: {episode_gov_reward}, episode_mean_house_reward: {episode_mean_house_reward}, step_count: {step_count}, episode_mean_tax: {np.mean(episode_mean_tax)}, episode_mean_wealth: {np.mean(episode_mean_wealth)}, episode_mean_post_income: {np.mean(episode_mean_post_income)}, episode_gdp: {np.mean(episode_gdp)}, episode_income_gini: {np.mean(episode_income_gini)}, episode_wealth_gini: {np.mean(episode_wealth_gini)}")
+#         global_obs = next_global_obs
+#         private_obs = next_private_obs
+#     print(f"episode_gov_reward: {episode_gov_reward}, episode_mean_house_reward: {episode_mean_house_reward}, step_count: {step_count}, episode_mean_tax: {np.mean(episode_mean_tax)}, episode_mean_wealth: {np.mean(episode_mean_wealth)}, episode_mean_post_income: {np.mean(episode_mean_post_income)}, episode_gdp: {np.mean(episode_gdp)}, episode_income_gini: {np.mean(episode_income_gini)}, episode_wealth_gini: {np.mean(episode_wealth_gini)}")
 
 
 
@@ -329,18 +329,29 @@ def evaluate_policy_pools(cfg_path = "n4", lock = None, temperature = 100.0):
             # Debugging with full model agent
             # Get government actions
             government_actions = government_agents[0].get_one_action(global_obs, private_obs, isHousehold=False)
-            household_pis = [
-                agent.get_one_pis(global_obs, private_ob, isHousehold=True)
-                for agent, private_ob in zip(household_agents, private_obs)
-            ]
-            # household_actions =household_agents[0].select_actions(household_pis)
-            tmp_means = [item[0] for item in household_pis]
-            tmp_stds = [item[1] for item in household_pis]
+            household_actions = []
+            for agent, private_ob in zip(household_agents, private_obs):
+                household_actions.append(agent.get_one_action(global_obs, private_ob, isHousehold=True))
+            # Get household actions
+            # household_pis = [
+            #     agent.get_one_pis(global_obs, private_ob, isHousehold=True)
+            #     for agent, private_ob in zip(household_agents, private_obs)
+            # ]
+            # # household_actions =household_agents[0].select_actions(household_pis)
+            # tmp_means = [item[0] for item in household_pis]
+            # tmp_stds = [item[1] for item in household_pis]
 
-            # 将列表转化为单个张量
-            mean_tensor = torch.cat(tmp_means).unsqueeze(0)
-            std_tensor = torch.cat(tmp_stds).unsqueeze(0)
-            household_actions = household_agents[0].select_actions((mean_tensor, std_tensor))
+            # # 将列表转化为单个张量
+            # mean_tensor = torch.cat(tmp_means).unsqueeze(0)
+            # std_tensor = torch.cat(tmp_stds).unsqueeze(0)
+            # # household_actions = household_agents[0].select_actions((mean_tensor, std_tensor))
+            # household_actions = []
+            # for i in range(households_agent_num):
+            #     tmp_household_actions = household_agents[i].select_actions((mean_tensor, std_tensor))
+            #     household_actions.append(tmp_household_actions[i])
+            # for agent in household_agents:
+            #     tmp_household_actions = agent.select_actions((mean_tensor, std_tensor))
+            #     household_actions.append(tmp_household_actions)
             
 
 
@@ -417,6 +428,6 @@ def evaluate_policy_pools(cfg_path = "n4", lock = None, temperature = 100.0):
         "mean_step": mean_step,
         "avg_house_reward": avg_house_reward
     }
-# for _ in range(10):
-#     result = evaluate_policy_pools('n4')
-#     print(result)
+for _ in range(10):
+    result = evaluate_policy_pools('n4')
+    print(result)

@@ -39,3 +39,8 @@ models_directory = 'TaxAI_modified/agents/model_pools/top_k/models'
 csv_directory = 'TaxAI_modified/agents/model_pools/top_k'
 
 clear_certain_pool(models_directory, csv_directory)
+
+models_directory = 'TaxAI_modified/agents/model_pools/models_from_server/models'
+csv_directory = 'TaxAI_modified/agents/model_pools/models_from_server'
+
+clear_certain_pool(models_directory, csv_directory)
