@@ -96,7 +96,7 @@ def select_policy(policy_pool: pd.DataFrame, env, cfg, temperature=100.0):
     np.random.seed()
     selected_index = np.random.choice(policy_pool.index, p=probabilities)
     
-    selected_index = 0 # for debug
+    # selected_index = 0 # for debug
     # print(f"Selected index: {selected_index}")
     selected_policy = policy_pool.loc[selected_index]
     selected_policy_path = selected_policy['path']

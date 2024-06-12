@@ -1,5 +1,5 @@
 id,path,algo,epoch,score,client_id,evaluated_times
-test2_long_term_independent_ppo-1718010608-0,Server/policy_pools/test2/long_term/models/independent_ppo-1718010608-0/run/gov_net.pt,independent_ppo,0,-0.47431245005850164,test2,61
+test2_long_term_independent_ppo-1718010608-0,Server/policy_pools/test2/long_term/models/independent_ppo-1718010608-0/run/gov_net.pt,independent_ppo,0,-0.4745814909435568,test2,97
 test2_long_term_independent_ppo-1718010608-10,Server/policy_pools/test2/long_term/models/independent_ppo-1718010608-10/run/gov_net.pt,independent_ppo,10,-0.3997892550764132,test2,0
 test2_short_term_independent_ppo-1718010608-3,Server/policy_pools/test2/short_term/models/independent_ppo-1718010608-3/run/gov_net.pt,independent_ppo,3,-0.2184936325690548,test2,0
 test2_short_term_independent_ppo-1718010608-4,Server/policy_pools/test2/short_term/models/independent_ppo-1718010608-4/run/gov_net.pt,independent_ppo,4,-0.09654185254813752,test2,0

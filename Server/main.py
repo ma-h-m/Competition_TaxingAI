@@ -302,6 +302,75 @@ def handle_client(client_socket, client_address):
                 with file_lock:
                     os.remove(zip_filepath)
 
+            elif command == "FETCH_RANDOM_TOP_K_MODEL":
+                
+                # num_models = int(args[0])
+                top_num = int(args[0])
+                client_id = args[1]
+                isHousehold = args[2] == "True"
+
+                selected_path, selected_algo, selected_epoch, selected_score = get_random_top_k_model(top_num, isHousehold)
+
+                model_path = selected_path
+                client_dir = os.path.join(ROOT_DIR, client_id)
+
+                zip_filename = f"{client_id}_models.zip"
+                zip_filepath = os.path.join(client_dir, zip_filename)
+                
+                def add_file_to_zip(zipf, file_path, arcname, existing_names):
+                    """
+                    将文件添加到 zip 文件中，避免重复文件名。
+                    """
+                    if arcname not in existing_names:
+                        zipf.write(file_path, arcname)
+                        existing_names.add(arcname)
+                    else:
+                        print(f"Skipping duplicate file: {arcname}")
+
+                with zipfile.ZipFile(zip_filepath, 'w') as zipf:
+                    existing_names = set()
+                    
+                    # 在压缩包中创建 models 文件夹
+                    models_folder = 'models/'
+                    
+                    # 添加模型文件到 models 文件夹中
+                    
+                    # 获取 model_path 作为一级目录
+                    base_name = os.path.basename(model_path)
+                    if os.path.isdir(model_path):
+                        # 如果是文件夹，递归地将其内容添加到压缩文件中
+                        for root, dirs, files in os.walk(model_path):
+                            for file in files:
+                                file_path = os.path.join(root, file)
+                                arcname = os.path.relpath(file_path, model_path)
+                                add_file_to_zip(zipf, file_path, arcname, existing_names)
+                    else:
+                        # 如果是文件，直接添加到压缩文件中
+                        arcname = os.path.basename(model_path)
+                        add_file_to_zip(zipf, model_path, arcname, existing_names)
+
+
+
+                    
+                    filesize = os.path.getsize(zip_filepath)
+                    
+                client_socket.send(f"{filesize}{SEPARATOR}".encode())
+                
+                # 等待客户端准备好接收文件
+                client_response = client_socket.recv(BUFFER_SIZE).decode()
+                if client_response == "READY":
+                    with open(zip_filepath, "rb") as f:
+                        while True:
+                            bytes_read = f.read(BUFFER_SIZE)
+                            if not bytes_read:
+                                break
+                            client_socket.sendall(bytes_read)
+                    print(f"[+] Random models sent to {client_id} at {client_address}.")
+                else:
+                    print("Client not ready to receive file.")
+
+                
+                os.remove(zip_filepath)                   
         except ConnectionResetError:
             break
     
@@ -390,8 +459,8 @@ def evaluate_existing_policies(stop_event, num_threads=5):
             for t in threads:
                 t.join()
 
-            print('Evaluated once. Sleep for 5 seconds.')
-            time.sleep(5)
+            print('Evaluated once. Sleep for 20 seconds.')
+            time.sleep(20)
 
 
 def main():
