@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 import zipfile
 
 SERVER_HOST = '0.0.0.0'
-SERVER_PORT = 5004
+SERVER_PORT = 5002
 BUFFER_SIZE = 4096
 SEPARATOR = "<SEPARATOR>"
 import pandas as pd
@@ -16,125 +16,18 @@ if not os.path.exists(ROOT_DIR):
 import shutil
 ip_to_id = {}
 file_lock = Lock()
-## especially for merge_new_csv_to_server
-def extract_info_from_path2(path):
-    # 从路径中提取所需的信息
-    path_parts = path.split('/')
-    model_index = path_parts.index('models')
-    run_index = path_parts.index('run')
-    model_name = '/'.join(path_parts[model_index + 1:run_index])
 
-    id_part =  "_" + path_parts[model_index - 1] + "_" + model_name
+user_info_path = os.path.join(ROOT_DIR, 'user_info.csv')
 
-    model_relative_path = '/'.join(path_parts[4 :])
-    return model_relative_path, id_part
-
-# 定义合并新文件到现有CSV的函数
-
-def merge_new_csv_to_server(client_id, client_dir):
-    subfolders = ['long_term', 'short_term', 'top_k']
-    for subfolder in subfolders:
-        subfolder_path = os.path.join(client_dir, subfolder)
-        if os.path.exists(subfolder_path):
-            gov_csv_path = os.path.join(subfolder_path, 'log_government.csv')
-            hh_csv_path = os.path.join(subfolder_path, 'log_household.csv')
-            server_gov_csv_path = os.path.join(ROOT_DIR, 'log_government.csv')
-            server_hh_csv_path = os.path.join(ROOT_DIR, 'log_household.csv')
-
-            with file_lock:
-
-                if os.path.exists(server_gov_csv_path):
-                    existing_gov_df = pd.read_csv(server_gov_csv_path)
-                else:
-                    existing_gov_df = pd.DataFrame()
-
-                if os.path.exists(server_hh_csv_path):
-                    existing_hh_df = pd.read_csv(server_hh_csv_path)
-                else:
-                    existing_hh_df = pd.DataFrame()
-
-                if os.path.exists(gov_csv_path):
-                    df_gov = pd.read_csv(gov_csv_path)
-                    df_gov['client_id'] = client_id
-                    df_gov['path'] = df_gov['path'].apply(lambda x: os.path.join(subfolder, x))
-                    df_gov['path'], df_gov['id'] = zip(*df_gov['path'].apply(extract_info_from_path2))
-                    df_gov['path'] = df_gov['path'].apply(lambda x: os.path.join(ROOT_DIR, client_id , x))
-                    df_gov["id"] = client_id + df_gov["id"]
-                    df_gov["evaluated_times"] = 0
-                    df_gov.insert(0, 'id', df_gov.pop('id')) 
-
-
-                    # 获取所有在CSV中记录的路径
-                    recorded_paths = set()
-
-                    # 处理每个路径，获取其两层父目录
-                    for path in df_gov['path'].tolist():
-                        parent_dir = os.path.dirname(path)   # 获取第一层父目录
-                        grandparent_dir = os.path.dirname(parent_dir)  # 获取第二层父目录
-                        recorded_paths.add(grandparent_dir)  # 添加到集合中
-
-                    # 去除重复项
-                    if not existing_gov_df.empty:
-                        df_gov = df_gov[~df_gov['id'].isin(existing_gov_df['id'])]
-
-                    if not existing_gov_df.empty:
-                        merged_gov_df = pd.concat([existing_gov_df, df_gov], ignore_index=True)
-                    else:
-                        merged_gov_df = df_gov
-
-                    merged_gov_df.to_csv(server_gov_csv_path, index=False)
-
-
-            with file_lock:
-                if os.path.exists(hh_csv_path):
-                    df_hh = pd.read_csv(hh_csv_path)
-                    df_hh['client_id'] = client_id
-                    df_hh['path'] = df_hh['path'].apply(lambda x: os.path.join(subfolder, x))
-                    df_hh['path'], df_hh['id'] = zip(*df_hh['path'].apply(extract_info_from_path2))
-                    df_hh['path'] = df_hh['path'].apply(lambda x: os.path.join(ROOT_DIR, client_id, x))
-                    df_hh["id"] = client_id + df_hh["id"]
-                    df_hh.insert(0, 'id', df_hh.pop('id'))
-                    df_hh["evaluated_times"] = 0
-
-                    # 获取所有在CSV中记录的路径
-
-
-                    for path in df_hh['path'].tolist():
-                        parent_dir = os.path.dirname(path)  # 获取第一层父目录
-                        grandparent_dir = os.path.dirname(parent_dir)  # 获取第二层父目录
-                        recorded_paths.add(grandparent_dir)  # 添加到集合中
-
-                    # 去除重复项
-                    if not existing_hh_df.empty:
-                        df_hh = df_hh[~df_hh['id'].isin(existing_hh_df['id'])]
-
-                    if not existing_hh_df.empty:
-                        merged_hh_df = pd.concat([existing_hh_df, df_hh], ignore_index=True)
-                    else:
-                        merged_hh_df = df_hh
-
-                    merged_hh_df.to_csv(server_hh_csv_path, index=False)
-
-
-                    models_path = os.path.join(subfolder_path, 'models')
-                # 检查路径并删除未记录的文件夹
-                    
-                    for folder_name in os.listdir(models_path):
-                        folder_path = os.path.join(subfolder_path,'models', folder_name)
-                        # 仅处理子文件夹
-                        if os.path.isdir(folder_path):
-                            # 检查该子文件夹是否在recorded_paths中
-                            if folder_path not in recorded_paths:
-                                # 移除不在recorded_paths中的文件夹
-                                shutil.rmtree(folder_path)
-                                print(f'Removed folder: {folder_path}')
 
 
 def handle_client(client_socket, client_address):
     print(f"[+] {client_address} connected.")
     
     client_id = ip_to_id.get(client_address[0], "Unidentified_client")
-    client_dir = os.path.join(ROOT_DIR, client_id)
+    receive_buffer_path = os.path.join(ROOT_DIR, "receive_buffer")
+    if not os.path.exists(receive_buffer_path):
+        os.makedirs(receive_buffer_path)
     
     while True:
         try:
@@ -146,10 +39,18 @@ def handle_client(client_socket, client_address):
 
             if command == "INIT":
                 client_id = args[0]
-                client_dir = os.path.join(ROOT_DIR, client_id)
-                if not os.path.exists(client_dir):
-                    with file_lock:
-                        os.makedirs(client_dir)
+                
+                
+                with file_lock:
+                    if not os.path.exists(user_info_path):
+                        user_info = pd.DataFrame(columns=['id'])
+                        user_info.to_csv(user_info_path, index=False)
+
+                    user_info = pd.read_csv(user_info_path)
+                    if client_id not in user_info['id'].values:
+                        user_info = user_info.append({'id': client_id}, ignore_index=True)
+                        user_info.to_csv(user_info_path, index=False)
+                            
                 print(f"Client {client_id} connected first time.")
                 ip_to_id[client_address[0]] = client_id
                 client_socket.send(f"ID {client_id} registered.".encode())
@@ -158,7 +59,10 @@ def handle_client(client_socket, client_address):
                 if len(args) >= 2:
                     filename = args[0]
                     filesize = int(args[1])
-                    filepath = os.path.join(client_dir, filename)
+                    model_id = args[2]
+                    algo_name = args[3]
+                    epoch = int(args[4])
+                    filepath = os.path.join(ROOT_DIR, client_id + "_" + model_id)
                     
                     # 发送确认消息
                     client_socket.send("READY".encode())
@@ -176,16 +80,38 @@ def handle_client(client_socket, client_address):
                                 f.write(bytes_read)
                                 bytes_received += len(bytes_read)
                         print(f"[+] File {filename} received from {client_id} at ip address {client_address}.")
-
+                        model_path = ""
                         # 如果文件是压缩包，则解压
                         if zipfile.is_zipfile(filepath):
                             with zipfile.ZipFile(filepath, 'r') as zip_ref:
-                                zip_ref.extractall(client_dir)
+                                top_level_name = zip_ref.namelist()[0].split('/')[0]
+                                model_path = os.path.join(ROOT_DIR, top_level_name)
+                                zip_ref.extractall(ROOT_DIR)
                             os.remove(filepath)
                     
-                    # 合并新的CSV文件到服务器端的CSV文件
-                    merge_new_csv_to_server(client_id, client_dir)
+                    # 更新服务器端log文件
+                    gov_log_path = os.path.join(ROOT_DIR, 'log_government.csv')
+                    hh_log_path = os.path.join(ROOT_DIR, 'log_household.csv')
+                    if not os.path.exists(gov_log_path):
+                        gov_df = pd.DataFrame(columns=['id','path', 'algo', 'epoch', 'score', 'client_id', 'evaluated_times'])
+                        gov_df.to_csv(gov_log_path, index=False)
+                    if not os.path.exists(hh_log_path):
+                        hh_df = pd.DataFrame(columns=['id','path', 'algo', 'epoch', 'score', 'client_id', 'evaluated_times'])
+                        hh_df.to_csv(hh_log_path, index=False)
                     
+                    gov_df = pd.read_csv(gov_log_path)
+                    hh_df = pd.read_csv(hh_log_path)
+                    # gov_df.append({'id': model_id, 'path': filepath, 'algo': algo_name, 'epoch': epoch, 'score': 0, 'client_id': client_id, 'evaluated_times': 0}, ignore_index=True)
+                    new_row_gov = {'id': model_id, 'path': model_path, 'algo': algo_name, 'epoch': epoch, 'score': 0, 'client_id': client_id, 'evaluated_times': 0}
+                    gov_df.loc[len(gov_df)] = new_row_gov
+
+                    gov_df.to_csv(gov_log_path, index=False)
+                    # hh_df.append({'id': model_id, 'path': filepath, 'algo': algo_name, 'epoch': epoch, 'score': 0, 'client_id': client_id, 'evaluated_times': 0}, ignore_index=True)
+
+                    new_row_hh = {'id': model_id, 'path': model_path, 'algo': algo_name, 'epoch': epoch, 'score': 0, 'client_id': client_id, 'evaluated_times': 0}
+                    hh_df.loc[len(hh_df)] = new_row_hh
+                    hh_df.to_csv(hh_log_path, index=False)
+
                     client_socket.send(f"RECEIVED{SEPARATOR}{filename}".encode())
                 else:
                     print("Invalid PUSH command format.")
@@ -235,10 +161,10 @@ def handle_client(client_socket, client_address):
                 with file_lock:
                     gov_model_list, hh_model_list, gov_selected_df, hh_selected_df = get_random_models(num_households, num_governments)
                     models_paths = gov_model_list + hh_model_list
-                    client_dir = os.path.join(ROOT_DIR, client_id)
+                    # client_dir = os.path.join(ROOT_DIR, client_id)
 
                     zip_filename = f"{client_id}_models.zip"
-                    zip_filepath = os.path.join(client_dir, zip_filename)
+                    zip_filepath = os.path.join(receive_buffer_path, zip_filename)
                     
                     def add_file_to_zip(zipf, file_path, arcname, existing_names):
                         """
@@ -304,7 +230,7 @@ def handle_client(client_socket, client_address):
 
             elif command == "FETCH_RANDOM_TOP_K_MODEL":
                 
-                # num_models = int(args[0])
+                
                 top_num = int(args[0])
                 client_id = args[1]
                 isHousehold = args[2] == "True"
@@ -312,10 +238,11 @@ def handle_client(client_socket, client_address):
                 selected_path, selected_algo, selected_epoch, selected_score = get_random_top_k_model(top_num, isHousehold)
 
                 model_path = selected_path
-                client_dir = os.path.join(ROOT_DIR, client_id)
+                # client_dir = os.path.join(ROOT_DIR, client_id)
+                
 
                 zip_filename = f"{client_id}_models.zip"
-                zip_filepath = os.path.join(client_dir, zip_filename)
+                zip_filepath = os.path.join(receive_buffer_path, zip_filename)
                 
                 def add_file_to_zip(zipf, file_path, arcname, existing_names):
                     """
@@ -380,7 +307,7 @@ def handle_client(client_socket, client_address):
 import random
 
 
-def get_random_models(num_household, num_government):
+def get_random_models(num_household, num_government, top_k = 0):
     # 设置文件路径
     gov_log_path = os.path.join(ROOT_DIR, 'log_government.csv')
     hh_log_path = os.path.join(ROOT_DIR, 'log_household.csv')
@@ -388,7 +315,14 @@ def get_random_models(num_household, num_government):
     # 读取csv文件
     gov_df = pd.read_csv(gov_log_path)
     hh_df = pd.read_csv(hh_log_path)
-    
+
+    gov_df_sorted = gov_df.sort_values(by='score', ascending=False)
+    hh_df_sorted = hh_df.sort_values(by='score', ascending=False)
+
+    if top_k > 0:
+        gov_df = gov_df_sorted.head(top_k)
+        hh_df = hh_df_sorted.head(top_k)
+
     # 如果请求的数量大于数据集的数量，则调整请求数量
     if num_household > len(hh_df):
         num_household = len(hh_df)
@@ -403,21 +337,38 @@ def get_random_models(num_household, num_government):
     gov_selected_df = gov_df[gov_df['path'].isin(gov_list)][['path', 'algo', 'epoch', 'score']]
     hh_selected_df = hh_df[hh_df['path'].isin(hh_list)][['path', 'algo', 'epoch', 'score']]
     
-    gov_list = [os.path.dirname(os.path.dirname(path)) for path in gov_list]
-    hh_list = [os.path.dirname(os.path.dirname(path)) for path in hh_list]
 
-    new_prefix = 'TaxAI_modified/agents/model_pools/models_from_server'
-    
-    # 替换前四级目录
-    def replace_prefix(path, new_prefix):
-        parts = path.split(os.sep)
-        if len(parts) > 4:
-            return os.path.join(new_prefix, *parts[4:])
-        return path
-    gov_selected_df['path'] = gov_selected_df['path'].apply(replace_prefix, new_prefix=new_prefix)
-    hh_selected_df['path'] = hh_selected_df['path'].apply(replace_prefix, new_prefix=new_prefix)
-    
     return gov_list, hh_list, gov_selected_df, hh_selected_df
+
+def get_random_top_k_model(top_num, isHousehold):
+    # 设置文件路径
+    if isHousehold:
+        log_path = os.path.join(ROOT_DIR, 'log_household.csv')
+    else:
+        log_path = os.path.join(ROOT_DIR, 'log_government.csv')
+    
+    # 读取csv文件
+    df = pd.read_csv(log_path)
+    
+    # 按照分数降序排序
+    df_sorted = df.sort_values(by='score', ascending=False)
+    
+    # 如果top_num大于数据集的数量，则调整top_num
+    if top_num > len(df_sorted):
+        top_num = len(df_sorted)
+    
+    # 取前top_num个模型
+    top_k_df = df_sorted.head(top_num)
+    
+    # 从前top_num个模型中随机选择一个
+    selected_row = top_k_df.sample(n=1).iloc[0]
+    
+    selected_path = selected_row['path']
+    selected_algo = selected_row['algo']
+    selected_epoch = selected_row['epoch']
+    selected_score = selected_row['score']
+    
+    return selected_path, selected_algo, selected_epoch, selected_score
 
     
 
@@ -469,24 +420,32 @@ def main():
     server_socket.listen(5)
     print(f"[*] Listening on {SERVER_HOST}:{SERVER_PORT}")
     stop_event = Event()
+    
 
-    evaluationg_thread_num = 5
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        try:
+    # evaluationg_thread_num = 5
+    # with ThreadPoolExecutor(max_workers=10) as executor:
+    #     try:
             
 
-            executor.submit(evaluate_existing_policies, stop_event, evaluationg_thread_num)
+    #         executor.submit(evaluate_existing_policies, stop_event, evaluationg_thread_num)
 
-            while True:
-                client_socket, client_address = server_socket.accept()
-                executor.submit(handle_client, client_socket, client_address)
+    #         while True:
+    #             client_socket, client_address = server_socket.accept()
+    #             executor.submit(handle_client, client_socket, client_address)
                 
-        except KeyboardInterrupt:
-            print("Shutting down server...")
-            stop_event.set()
-            server_socket.close()
-            # evaluate_thread.join()
-            print("Server shutdown complete.")
+    #     except KeyboardInterrupt:
+    #         print("Shutting down server...")
+    #         stop_event.set()
+    #         server_socket.close()
+    #         # evaluate_thread.join()
+    #         print("Server shutdown complete.")
+
+
+
+    while True:
+        client_socket, client_address = server_socket.accept()
+        client_handler = Thread(target=handle_client, args=(client_socket, client_address))
+        client_handler.start()
 
 if __name__ == "__main__":
     main()

@@ -3,19 +3,19 @@ import os
 import zipfile
 
 SERVER_HOST = '127.0.0.1'
-SERVER_PORT = 5001
+SERVER_PORT = 5002
 BUFFER_SIZE = 4096
 SEPARATOR = "<SEPARATOR>"
 USER_ID = "test2"
 
-def push_file(filepath):
+def push_file(filepath, model_id="", algo_name = "", epoch = 0):
     filename = os.path.basename(filepath)
     filesize = os.path.getsize(filepath)
     
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((SERVER_HOST, SERVER_PORT))
     
-    client_socket.send(f"PUSH{SEPARATOR}{filename}{SEPARATOR}{filesize}{SEPARATOR}".encode())
+    client_socket.send(f"PUSH{SEPARATOR}{filename}{SEPARATOR}{filesize}{SEPARATOR}{model_id}{SEPARATOR}{algo_name}{SEPARATOR}{epoch}{SEPARATOR}".encode())
     
     # 设置超时时间为10秒
     client_socket.settimeout(10)
@@ -44,24 +44,24 @@ def push_file(filepath):
 
     client_socket.close()
 
-def push_folder(folder_path, user_id=USER_ID):
-    existing_files = get_existing_files(user_id)
+def push_folder(folder_path, user_id=USER_ID, model_id="", algo_name = "", epoch = 0):
+    # existing_files = get_existing_files(user_id)
     zip_filename = f"{os.path.basename(folder_path)}.zip"
     zip_filepath = os.path.join(os.path.dirname(folder_path), zip_filename)
     
+    # 创建压缩包并写入文件
     with zipfile.ZipFile(zip_filepath, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, dirs, files in os.walk(folder_path):
             for file in files:
                 filepath = os.path.join(root, file)
                 relative_path = os.path.relpath(filepath, folder_path)
                 
-                # 检查文件是否已经存在于服务器上
-                if file.endswith(".csv") or relative_path not in existing_files:
-                    zipf.write(filepath, relative_path)
-                else:
-                    print(f"File {relative_path} already exists on the server. Skipping...")
+                # 在压缩包内创建 user_id_model_id 文件夹
+                archive_name = os.path.join(f"{user_id}_{model_id}", relative_path)
+                
+                zipf.write(filepath, archive_name)
     
-    push_file(zip_filepath)
+    push_file(zip_filepath, model_id, algo_name, epoch)
     os.remove(zip_filepath)
 
 def initial_communicate_with_server(id="Unknown"):
@@ -88,7 +88,7 @@ def get_existing_files(client_id):
     
     return existing_files
 
-def fetch_random_models(gov_model_num = 1, household_model_num = 4, user_id=USER_ID, dest_dir="TaxAI_3rd_version/agents/model_pools/models_from_server"):
+def fetch_random_models(gov_model_num = 1, household_model_num = 4, user_id=USER_ID, dest_dir="TaxAI_modified/agents/model_pools/models_from_server"):
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
 
@@ -162,7 +162,7 @@ def fetch_random_top_k_model(k=5, user_id=USER_ID, dest_dir="TaxAI_3rd_version/a
             bytes_received += len(bytes_read)
     
     print(f"Received {zip_filename} from server.")
-
+    
     # 解压文件到指定目录
     with zipfile.ZipFile(zip_filename, 'r') as zip_ref:
         zip_ref.extractall(dest_dir)
@@ -173,9 +173,9 @@ def fetch_random_top_k_model(k=5, user_id=USER_ID, dest_dir="TaxAI_3rd_version/a
     client_socket.close()
 
 if __name__ == "__main__":
-    # 示例用法
+# #     # 示例用法
     initial_communicate_with_server(USER_ID)
-    # push_folder("/home/mhm/workspace/Competition_TaxingAI/TaxAI_modified/agents/model_pools")
+# #     # push_folder("/home/mhm/workspace/Competition_TaxingAI/TaxAI_modified/agents/model_pools")
 
-    # fetch_random_models(user_id=USER_ID)
+# #     # fetch_random_models(user_id=USER_ID)
     fetch_random_top_k_model(user_id=USER_ID, dest_dir="TaxAI_3rd_version/agents/model_self")

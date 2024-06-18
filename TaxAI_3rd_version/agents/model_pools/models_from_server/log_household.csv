@@ -1,5 +1,0 @@
-path,algo,epoch,score
-TaxAI_modified/agents/model_pools/models_from_server/models/independent_ppo-1718010608-0/run/house_net.pt,independent_ppo,0,1.6856700763687098
-TaxAI_modified/agents/model_pools/models_from_server/models/independent_ppo-1718010608-5/run/house_net.pt,independent_ppo,5,3.65462634142654
-TaxAI_modified/agents/model_pools/models_from_server/models/independent_ppo-1718010608-7/run/house_net.pt,independent_ppo,7,5.453330269780031
-TaxAI_modified/agents/model_pools/models_from_server/models/independent_ppo-1718010608-9/run/house_net.pt,independent_ppo,9,7.044847003527278

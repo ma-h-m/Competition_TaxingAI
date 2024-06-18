@@ -16,10 +16,13 @@ import yaml
 import argparse
 from omegaconf import OmegaConf
 
-from agents.model_self.agent import agent
-
+# from agents.model_self.agent import agent
+from client import *
 
 import shutil
+
+
+from dynamic_import import *
 
 # os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 def parse_args():
@@ -123,12 +126,23 @@ if __name__ == '__main__':
     #     trainer = calibration_agent(env, yaml_cfg.Trainer)
     # start to learn
     print("n_households: ", yaml_cfg.Trainer["n_households"])
-    # Trainer中加入一个
-    trainer = agent(env, yaml_cfg.Trainer)
-
+    
+    initial_communicate_with_server(USER_ID)
+    code_path = "TaxAI_3rd_version/agents/model_self"
+    fetch_random_top_k_model(user_id=USER_ID, dest_dir= code_path)
+    import time
+    print("sleep 10s for fetching models from server...")
+    time.sleep(10)
+    
+    Agent = dynamic_import_class("agent", os.path.join(code_path, 'agent.py'), "agent")
+    trainer = Agent(env, yaml_cfg.Trainer)
     trainer.learn()
+
+    # trainer = agent(env, yaml_cfg.Trainer)
+
+    # trainer.learn()
     # trainer.test()
     # # close the environment
-    # env.close()
+    env.close()
 
 

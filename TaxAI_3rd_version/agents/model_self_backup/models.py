@@ -391,6 +391,7 @@ class MFSharedCritic(nn.Module):   # Q(s, a_g, a_h, \bar{a_h})
 this network also include gaussian distribution and beta distribution
 
 """
+# add a batch normalization layer to value
 class mlp_net(nn.Module):
     def __init__(self, state_size, num_actions):
         super(mlp_net, self).__init__()

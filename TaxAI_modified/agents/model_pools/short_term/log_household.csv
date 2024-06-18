@@ -1,11 +1,11 @@
 path,algo,epoch,score
-TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1718101710-0/run/house_net.pt,independent_ppo,0,11.563874030261008
-TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1718101916-0/run/house_net.pt,independent_ppo,0,8.71593787768287
-TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1718101916-1/run/house_net.pt,independent_ppo,1,7.9287875784561725
-TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1718101916-2/run/house_net.pt,independent_ppo,2,3.5644898547965167
 TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1718101916-3/run/house_net.pt,independent_ppo,3,2.42799192717178
 TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1718101916-4/run/house_net.pt,independent_ppo,4,5.499224862129432
 TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1718101916-5/run/house_net.pt,independent_ppo,5,-1.24608172260884
 TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1718101916-6/run/house_net.pt,independent_ppo,6,5.5888896494786575
 TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1718102126-0/run/house_net.pt,independent_ppo,0,8.71593787768287
 TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1718102222-0/run/house_net.pt,independent_ppo,0,8.71593787768287
+TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1718264055-0/run/house_net.pt,independent_ppo,0,8.71593787768287
+TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1718264825-0/run/house_net.pt,independent_ppo,0,8.71593787768287
+TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1718698221-0/run/house_net.pt,independent_ppo,0,8.71593787768287
+TaxAI_modified/agents/model_pools/short_term/models/independent_ppo-1718698221-1/run/house_net.pt,independent_ppo,1,3.408100424511261

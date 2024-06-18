@@ -79,16 +79,29 @@ def load_full_model(model_path, env,cfg):
     agent = Agent(copy.deepcopy(env), cfg, house_net_path=os.path.join(path, "run","house_net.pt"), gov_net_path=os.path.join(path, "run","gov_net.pt"), test=True)
     return agent
 
-def select_policy(policy_pool: pd.DataFrame, env, cfg, temperature=100.0):
+def select_policy(policy_pool: pd.DataFrame, env, cfg, temperature=100.0, sigma = 1.0):
 
     # 获取score列
     scores = policy_pool['score'].values
+    evaluated_times = policy_pool['evaluated_times'].values
 
     # 归一化score列
     normalized_scores = (scores - np.min(scores)) / (np.max(scores) - np.min(scores))
 
     # 对归一化的score应用softmax函数
     probabilities = softmax(normalized_scores / temperature)
+
+    # 使用 UCB 方法计算每个策略的选择权重
+    total_evaluations = np.sum(evaluated_times)
+    exploration_term = np.sqrt((2 * np.log(total_evaluations + 1)) / (evaluated_times + 1))
+
+    # 调整概率：结合 UCB 的思想
+    adjusted_probabilities = probabilities + exploration_term * sigma
+    
+    adjusted_probabilities /= np.sum(adjusted_probabilities)  # 归一化以确保是概率
+    
+
+
     # print("Normalized Scores:", normalized_scores)
     # print("Probabilities:", probabilities)
 
@@ -430,6 +443,6 @@ def evaluate_policy_pools(cfg_path = "n4", lock = None, temperature = 100.0):
         "mean_step": mean_step,
         "avg_house_reward": avg_house_reward
     }
-for _ in range(10):
-    result = evaluate_policy_pools('n4')
-    print(result)
+# for _ in range(10):
+#     result = evaluate_policy_pools('n4')
+#     print(result)

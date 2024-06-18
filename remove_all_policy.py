@@ -24,7 +24,9 @@ directories = [
     'Server/policy_pools',
     'TaxAI_modified/agents/model_pools/long_term',
     'TaxAI_modified/agents/model_pools/short_term',
-    'TaxAI_modified/agents/model_pools/top_k'
+    'TaxAI_modified/agents/model_pools/top_k',
+    'TaxAI_3rd_version/agents/model_pools/long_term',
+    'TaxAI_3rd_version/agents/model_pools/short_term',
 ]
 
 for directory in directories:
