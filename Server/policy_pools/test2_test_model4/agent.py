@@ -254,7 +254,10 @@ class agent:
     
 
 # could be eigher models from server or models from short/long term policy pool
-    def train_with_external_models(self, external_household_logs, external_government_logs):
+    def train_with_external_models(self):
+        #'TaxAI_modified/agents/model_pools/models_from_server/log_household.csv', 'TaxAI_modified/agents/model_pools/models_from_server/log_government.csv'
+        external_household_logs = self.path_dict['external_policy_path'] + "/log_household.csv"
+        external_government_logs = self.path_dict['external_policy_path'] + "/log_government.csv"
         episode_rewards = np.zeros((self.args.n_households, ), dtype=np.float32)
         global_obs, private_obs = self.envs.reset()
         global_obs, private_obs = self.observation_wrapper(global_obs, private_obs)
@@ -265,46 +268,64 @@ class agent:
         external_household_agents = [select_policy_from_models_from_server(external_household_logs, self.envs, self.args) for _ in range(hh_num)]
 
         # 先写自己的government + 外来的household
-        # print("Training with external household models...")
-        for update in range(1):
+        for update in range(self.args.local_training_epoch):
 
 
-
+            mb_obs, mb_rewards, mb_actions, mb_dones, mb_values = [], [], [], [], []
 
             gov_mb_obs, gov_mb_rewards, gov_mb_actions, gov_mb_dones, gov_mb_values = [], [], [], [], []
             
-            # self._adjust_learning_rate(update, 10)
+            self._adjust_learning_rate(update, self.args.n_epochs)
 
             for step in range(self.args.epoch_length):
 
-                
                 with torch.no_grad():
                     # get tensors
                     gov_values, gov_pis = self.gov_net(self._get_tensor_inputs(global_obs))
                     # house_values, house_pis = self.households_net(self._get_tensor_inputs(self.obs))
-                    household_actions = []
-                    for hh_agent, private_obs in zip(external_household_agents, private_obs):
-                        tmp_action = hh_agent.get_one_action(global_obs, private_obs, isHousehold=True)
-                        household_actions.append(tmp_action)
+                    house_values, house_pis = [], []
+                    for i in range(hh_num):
+                        house_values_i, house_pis_i = external_household_agents[i].households_net(external_household_agents[i]._get_tensor_inputs(self.obs[i]))
 
+                    
+                        house_values.append(house_values_i)
+                        house_pis.append(house_pis_i)
+
+                    house_values = torch.stack(house_values)
+                    
                     
                 # select actions
                 gov_actions = select_actions(gov_pis)
                 gov_action = self.action_wrapper(gov_actions)
-                gov_action = self.gov_action_max * (gov_action * 2 - 1)
+
                 # house_actions = select_actions(house_pis)
                 # input_actions = self.action_wrapper(house_actions)
 
+                tmp_means = [item[0] for item in house_pis]
+                tmp_stds = [item[1] for item in house_pis]
+
+                # 将列表转化为单个张量
+                mean_tensor = torch.cat(tmp_means).unsqueeze(0)
+                std_tensor = torch.cat(tmp_stds).unsqueeze(0)
                 # household_actions = household_agents[0].select_actions((mean_tensor, std_tensor))
+                household_actions = []
+                for i in range(len(external_household_agents)):
+                    tmp_household_actions = external_household_agents[i].select_actions((mean_tensor, std_tensor))
+                    household_actions.append(tmp_household_actions[i])
+
+
+
+
+
+                action = {self.envs.government.name: self.gov_action_max * (gov_action * 2 - 1),
+                          self.envs.households.name: self.hou_action_max * (household_actions*2-1) }
                 
+                # house_pis = torch.stack(house_pis)
 
-
-
-
-
-                action = {self.envs.government.name: np.array(gov_action),
-                          self.envs.households.name: np.array(household_actions) }
-
+                # start to store information
+                mb_obs.append(np.copy(self.obs))
+                mb_actions.append(household_actions)
+                mb_values.append(house_values.detach().cpu().numpy().squeeze(0))
                 # gov data add
                 gov_mb_obs.append(np.copy(global_obs))
                 gov_mb_actions.append(gov_actions)
@@ -314,7 +335,8 @@ class agent:
                 next_global_obs, next_private_obs = self.observation_wrapper(next_global_obs, next_private_obs)
 
                 self.dones = np.tile(done, (self.args.n_households, 1))
-
+                mb_dones.append(self.dones)
+                mb_rewards.append(house_reward)
                 gov_mb_dones.append(done)
                 gov_mb_rewards.append(gov_reward.reshape(1))
                 # clear the observation
@@ -323,8 +345,6 @@ class agent:
                     next_global_obs, next_private_obs = self.observation_wrapper(next_global_obs, next_private_obs)
 
                 self.obs = self.obs_concate_numpy(next_global_obs, next_private_obs, update=False)
-                global_obs, private_obs = next_global_obs, next_private_obs
-
                 # process the rewards part -- display the rewards on the screen
                 episode_rewards += house_reward.flatten()
                 masks = np.array([0.0 if done_ else 1.0 for done_ in self.dones], dtype=np.float32)
@@ -332,89 +352,11 @@ class agent:
                 episode_rewards *= masks
             
             # after compute the returns, let's process the rollouts
-            
+            mb_obs, mb_actions, mb_returns, mb_advs = self.mb_data_process(mb_obs, mb_rewards, mb_actions, mb_dones, mb_values, agent="households")
             gov_mb_obs, gov_mb_actions, gov_mb_returns, gov_mb_advs = self.mb_data_process(gov_mb_obs, gov_mb_rewards, gov_mb_actions, gov_mb_dones, gov_mb_values, agent="government")
             
-            self.gov_old_net.load_state_dict(self.gov_net.state_dict())
-            # start to update the network
-            self._update_gov_network(gov_mb_obs, gov_mb_actions, gov_mb_returns, gov_mb_advs)
-
-        # 再写的是自己的household + 外来的household + 外来的government(假定household内是对称的，默认把自己的放到第一个，替换掉抽取的最后一个)
-        # print("Training with external government models...")
-        for update in range(1):
-            mb_obs, mb_rewards, mb_actions, mb_dones, mb_values = [], [], [], [], []
-            # self._adjust_learning_rate(update, 10)
-
-            for step in range(self.args.epoch_length):
-                with torch.no_grad():
-                    # get tensors
-                    gov_action = external_government_model.get_one_action(global_obs, private_obs, isHousehold=False)
-                    
-                    household_actions = []
-
-                    obs = np.concatenate((global_obs, private_obs[hh_num - 1]), axis=-1)
-                    obs_in_tensor = self._get_tensor_inputs(obs)
-                    house_values, house_pis = self.households_net(obs_in_tensor)
-                    self_action = select_actions(house_pis)
-                    self_action = self.action_wrapper(self_action)
-                    self_action = self.hou_action_max * (self_action * 2 - 1)
-
-                    for index in range(hh_num - 1):
-                        tmp_action = external_household_agents[index].get_one_action(global_obs, private_obs[index], isHousehold=True)
-                        household_actions.append(tmp_action)
-                    
-                    household_actions.append(self_action)
-
-                    
-                # select actions
-
-                # house_actions = select_actions(house_pis)
-                # input_actions = self.action_wrapper(house_actions)
-
-                # household_actions = household_agents[0].select_actions((mean_tensor, std_tensor))
-                
-
-
-
-
-
-                action = {self.envs.government.name: np.array(gov_action),
-                          self.envs.households.name: np.array(household_actions) }
-
-                # start to store information
-                mb_obs.append(np.copy(obs))
-                mb_actions.append(self_action)
-                mb_values.append(house_values.detach().cpu().numpy().squeeze(0))
-                
-                next_global_obs, next_private_obs, gov_reward, house_reward, done = self.envs.step(action)
-                next_global_obs, next_private_obs = self.observation_wrapper(next_global_obs, next_private_obs)
-
-                self.dones = np.tile(done, (self.args.n_households, 1))
-
-                mb_dones.append(done)
-                mb_rewards.append(house_reward[hh_num - 1])
-                # clear the observation
-                if done:
-                    next_global_obs, next_private_obs = self.envs.reset()
-                    next_global_obs, next_private_obs = self.observation_wrapper(next_global_obs, next_private_obs)
-
-                self.obs = self.obs_concate_numpy(next_global_obs, next_private_obs, update=False)
-                global_obs, private_obs = next_global_obs, next_private_obs
-
-                # process the rewards part -- display the rewards on the screen
-                episode_rewards += house_reward[hh_num - 1].flatten()
-                masks = np.array([0.0 if done_ else 1.0 for done_ in self.dones], dtype=np.float32)
-
-                episode_rewards *= masks
-            
-            # after compute the returns, let's process the rollouts
-            
-            mb_obs, mb_actions, mb_returns, mb_advs = self.mb_data_process(mb_obs, mb_rewards, mb_actions, mb_dones, mb_values, agent="households", isOneHousehold=True)
-          
             self.households_old_net.load_state_dict(self.households_net.state_dict())
-      
-            # start to update the network
-            self._update_house_network(mb_obs, mb_actions, mb_returns, mb_advs)
+            self.gov_old_net.load_state_dict(self.gov_net.state_dict())
             # start to update the network
             # house_policy_loss, house_value_loss, house_ent_loss, gov_policy_loss, gov_value_loss, gov_ent_loss =\
             #     self._update_network(mb_obs, mb_actions, mb_returns, mb_advs, gov_mb_obs, gov_mb_actions, gov_mb_returns, gov_mb_advs)
@@ -631,16 +573,6 @@ class agent:
                 # house_policy_loss, house_value_loss, house_ent_loss = self.sub_update_network(house_obs, house_actions, house_returns, house_advantages,  inds, nbatch_train, start, agent="households")
                 gov_policy_loss, gov_value_loss, gov_ent_loss = self.sub_update_network(gov_obs, gov_actions, gov_returns, gov_advantages,  inds, nbatch_train, start, agent="government")
         return gov_policy_loss.item(), gov_value_loss.item(), gov_ent_loss.item()
-    def _update_house_network(self, house_obs, house_actions, house_returns, house_advantages):
-        inds = np.arange(house_obs.shape[0])
-        nbatch_train = self.args.batch_size
-        for _ in range(self.args.update_epoch):
-            np.random.shuffle(inds)
-            for start in range(0, house_obs.shape[0], nbatch_train):
-                house_policy_loss, house_value_loss, house_ent_loss = self.sub_update_network(house_obs, house_actions, house_returns, house_advantages,  inds, nbatch_train, start, agent="households")
-        return house_policy_loss.item(), house_value_loss.item(), house_ent_loss.item()
- 
-   
     # adjust the learning rate
     def _adjust_learning_rate(self, update, num_updates):
         lr_frac = 1 - (update / num_updates)

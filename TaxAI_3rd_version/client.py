@@ -88,9 +88,34 @@ def get_existing_files(client_id):
     
     return existing_files
 
+import shutil
+def clear_directory(path):
+    if os.path.exists(path):
+        for root, dirs, files in os.walk(path, topdown=False):
+            for name in files:
+                file_path = os.path.join(root, name)
+                os.remove(file_path)
+                print(f'Removed file: {file_path}')
+            for name in dirs:
+                dir_path = os.path.join(root, name)
+                shutil.rmtree(dir_path)
+                print(f'Removed directory: {dir_path}')
+        print(f'All files and directories under {path} have been removed.')
+    else:
+        print(f'The path {path} does not exist.')
+import pandas as pd
+
+
+def replace_path_prefix(path, new_prefix):
+    parts = path.split(os.sep)
+    return os.path.join(new_prefix, *parts[2:])
+def add_path_postfix(path, postfix):
+    return os.path.join(path, postfix)
 def fetch_random_models(gov_model_num = 1, household_model_num = 4, user_id=USER_ID, dest_dir="TaxAI_3rd_version/agents/model_pools/models_from_server"):
+
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
+    clear_directory(dest_dir)
 
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((SERVER_HOST, SERVER_PORT))
@@ -129,6 +154,28 @@ def fetch_random_models(gov_model_num = 1, household_model_num = 4, user_id=USER
     print(f"Extracted models to {dest_dir}")
     
     client_socket.close()
+    if not os.path.exists(os.path.join(dest_dir, "log_government.csv")):
+        log_government = pd.DataFrame(columns=["path", "algo", "epoch", "score"])
+        log_government.to_csv(os.path.join(dest_dir, "log_government.csv"), index=False)
+    if not os.path.exists(os.path.join(dest_dir, "log_household.csv")):
+        log_household = pd.DataFrame(columns=["path", "algo", "epoch", "score"])
+        log_household.to_csv(os.path.join(dest_dir, "log_household.csv"), index=False)
+
+    log_government = pd.read_csv(os.path.join(dest_dir, "log_government.csv"))
+    log_household = pd.read_csv(os.path.join(dest_dir, "log_household.csv"))
+    # 替换log_government中的path列
+    log_government['path'] = log_government['path'].apply(replace_path_prefix, new_prefix=dest_dir)
+
+    # 替换log_household中的path列
+    log_household['path'] = log_household['path'].apply(replace_path_prefix, new_prefix=dest_dir)
+
+    # 保存修改后的CSV文件
+    log_government.to_csv(os.path.join(dest_dir, "log_government.csv"), index=False)
+    log_household.to_csv(os.path.join(dest_dir, "log_household.csv"), index=False)
+        
+
+
+
 
 def list_zip_contents(zip_filename):
     with zipfile.ZipFile(zip_filename, 'r') as zip_ref:
@@ -184,9 +231,9 @@ def fetch_random_top_k_model(k=5, user_id=USER_ID, dest_dir="TaxAI_3rd_version/a
     client_socket.close()
 
 # if __name__ == "__main__":
-# # # # #     # 示例用法
+    # 示例用法
 #     initial_communicate_with_server(USER_ID)
-#     push_folder("/home/mhm/workspace/Competition_TaxingAI/TaxAI_3rd_version/agents/model_self", user_id=USER_ID, model_id="test_model2", algo_name="test_algo", epoch=0)
+#     push_folder("/home/mhm/workspace/Competition_TaxingAI/TaxAI_3rd_version/agents/model_self", user_id=USER_ID, model_id="test_model4", algo_name="test_algo", epoch=0)
 
-#     # fetch_random_models(user_id=USER_ID)
+    # fetch_random_models(user_id=USER_ID)
 #     fetch_random_top_k_model(user_id=USER_ID, dest_dir="TaxAI_3rd_version/agents/model_self")

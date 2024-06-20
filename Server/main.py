@@ -102,13 +102,13 @@ def handle_client(client_socket, client_address):
                     gov_df = pd.read_csv(gov_log_path)
                     hh_df = pd.read_csv(hh_log_path)
                     # gov_df.append({'id': model_id, 'path': filepath, 'algo': algo_name, 'epoch': epoch, 'score': 0, 'client_id': client_id, 'evaluated_times': 0}, ignore_index=True)
-                    new_row_gov = {'id': model_id, 'path': model_path, 'algo': algo_name, 'epoch': epoch, 'score': 0, 'client_id': client_id, 'evaluated_times': 0}
+                    new_row_gov = {'id': model_id, 'path': os.path.join(model_path,"run/gov_net.pt"), 'algo': algo_name, 'epoch': epoch, 'score': 0, 'client_id': client_id, 'evaluated_times': 0}
                     gov_df.loc[len(gov_df)] = new_row_gov
 
                     gov_df.to_csv(gov_log_path, index=False)
                     # hh_df.append({'id': model_id, 'path': filepath, 'algo': algo_name, 'epoch': epoch, 'score': 0, 'client_id': client_id, 'evaluated_times': 0}, ignore_index=True)
 
-                    new_row_hh = {'id': model_id, 'path': model_path, 'algo': algo_name, 'epoch': epoch, 'score': 0, 'client_id': client_id, 'evaluated_times': 0}
+                    new_row_hh = {'id': model_id, 'path': os.path.join(model_path, "run/house_net.pt"), 'algo': algo_name, 'epoch': epoch, 'score': 0, 'client_id': client_id, 'evaluated_times': 0}
                     hh_df.loc[len(hh_df)] = new_row_hh
                     hh_df.to_csv(hh_log_path, index=False)
 

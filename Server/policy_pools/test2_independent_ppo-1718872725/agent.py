@@ -59,7 +59,7 @@ class agent:
         self.gov_net = mlp_net(self.envs.government.observation_space.shape[0], self.envs.government.action_space.shape[0])
         self.gov_old_net = copy.deepcopy(self.gov_net)
         self.local_training_epoch = self.args.local_training_epoch
-
+        self.path_dict = {}
         # if use the cuda...
         if self.args.cuda:
             self.households_net.cuda()
@@ -254,7 +254,10 @@ class agent:
     
 
 # could be eigher models from server or models from short/long term policy pool
-    def train_with_external_models(self, external_household_logs, external_government_logs):
+    def train_with_external_models(self):
+        #'TaxAI_modified/agents/model_pools/models_from_server/log_household.csv', 'TaxAI_modified/agents/model_pools/models_from_server/log_government.csv'
+        external_household_logs = self.path_dict['external_policy_path'] + "/log_household.csv"
+        external_government_logs = self.path_dict['external_policy_path'] + "/log_government.csv"
         episode_rewards = np.zeros((self.args.n_households, ), dtype=np.float32)
         global_obs, private_obs = self.envs.reset()
         global_obs, private_obs = self.observation_wrapper(global_obs, private_obs)
@@ -430,7 +433,7 @@ class agent:
             
         # training with external models
 
-            # self.train_with_external_models('TaxAI_modified/agents/model_pools/models_from_server/log_household.csv', 'TaxAI_modified/agents/model_pools/models_from_server/log_government.csv')
+            # self.train_with_external_models()
 
 
             if update % self.args.display_interval == 0:

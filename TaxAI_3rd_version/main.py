@@ -51,7 +51,7 @@ def parse_args():
     # parser.add_argument("--top_k_policy_update_freq", type=int, default=10, help="interval of updating top k policy pool")
     # parser.add_argument("--top_k_policy_pool_size", type=int, default=10, help="size of top k policy pool")
     # parser.add_argument("--freq_of_pushing_moodels_to_server", type=int, default=10, help="frequency of pushing models to server")
-    parser.add_argument("--push_new_policy_to_server", type=int, default=0, help="whether to push new policy to server")
+    parser.add_argument("--push_new_policy_to_server", type=int, default=1, help="whether to push new policy to server")
     parser.add_argument("--upload_freq", type=int, default=10, help="frequency of uploading models to server")
     parser.add_argument("--local_epoch", type=int, default=50, help="local epoch")
     args = parser.parse_args()
@@ -83,7 +83,9 @@ if __name__ == '__main__':
     args = parse_args()
     path = args.config
     # yaml_cfg = OmegaConf.load(f'./cfg/{path}.yaml')
-    yaml_cfg = OmegaConf.load(f'/home/mhm/workspace/Competition_TaxingAI/TaxAI_modified/agents/cfg/n4.yaml')
+    current_path = os.path.join(os.getcwd(), "TaxAI_3rd_version")
+
+    yaml_cfg = OmegaConf.load(f'{current_path}/agents/cfg/n4.yaml')
     # todo if local run code
     # yaml_cfg = OmegaConf.load(f'D:\\code\\AI-TaxingPolicy\\AI-TaxingPolicy\\cfg\\default.yaml')
     yaml_cfg.Trainer["n_households"] = args.n_households
@@ -132,12 +134,25 @@ if __name__ == '__main__':
     
     initial_communicate_with_server(USER_ID)
     code_path = "TaxAI_3rd_version/agents/model_self"
-    if not args.push_new_policy_to_server: # If not push new policy to server, fetch a top_k model from server to agents/model_self
-        fetch_random_top_k_model(user_id=USER_ID, dest_dir= code_path)
-    
-    Agent = dynamic_import_class("agent", os.path.join(code_path, 'agent.py'), "agent")
-    trainer = Agent(env, yaml_cfg.Trainer)
-    trainer.learn()
+    external_policy_path = "TaxAI_3rd_version/agents/model_pools/models_from_server"
+
+    while True:
+
+
+        if not args.push_new_policy_to_server: # If not push new policy to server, fetch a top_k model from server to agents/model_self
+            shutil.rmtree(code_path)
+            fetch_random_top_k_model(user_id=USER_ID, dest_dir= code_path)
+            print("Fetch model from server to agents/model_self")
+        
+        fetch_random_models(user_id=USER_ID, dest_dir=external_policy_path)
+        Agent = dynamic_import_class("agent", os.path.join(code_path, 'agent.py'), "agent")
+        trainer = Agent(env, yaml_cfg.Trainer)
+
+
+        trainer.path_dict = {"code_path": code_path, "external_policy_path": external_policy_path}
+        print("Successfully load model. Start to train.")
+        trainer.learn()
+
 
     # trainer = agent(env, yaml_cfg.Trainer)
 
