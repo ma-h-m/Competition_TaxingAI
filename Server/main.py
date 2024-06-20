@@ -62,7 +62,7 @@ def handle_client(client_socket, client_address):
                     model_id = args[2]
                     algo_name = args[3]
                     epoch = int(args[4])
-                    filepath = os.path.join(ROOT_DIR, client_id + "_" + model_id)
+                    filepath = os.path.join(ROOT_DIR, client_id + "_" + model_id + ".zip")
                     
                     # 发送确认消息
                     client_socket.send("READY".encode())
@@ -279,7 +279,7 @@ def handle_client(client_socket, client_address):
 
 
                     
-                    filesize = os.path.getsize(zip_filepath)
+                filesize = os.path.getsize(zip_filepath)
                     
                 client_socket.send(f"{filesize}{SEPARATOR}".encode())
                 
@@ -449,4 +449,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    # merge_csv_files()

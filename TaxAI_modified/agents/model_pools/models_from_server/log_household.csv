@@ -1,5 +1,5 @@
 path,algo,epoch,score
-Server/policy_pools/test2_test_model2,test_algo,0,0
-Server/policy_pools/test2_test_model4,test_algo,0,0
+Server/policy_pools/test2_test_model3,test_algo,0,0
 Server/policy_pools/test2_test_model5,test_algo,0,0
+Server/policy_pools/test2_test_model1,test_algo,0,0
 Server/policy_pools/test2_test_model6,test_algo,0,0

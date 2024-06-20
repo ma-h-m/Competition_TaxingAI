@@ -46,13 +46,14 @@ def parse_args():
 
 
     parser.add_argument('--long_term_policy_update_freq', type=int, default=10, help='interval of updating long term policy pool')
-    parser.add_argument("--long_term_policy_pool_size", type=int, default=30000, help="size of long term policy pool")
-    parser.add_argument("--short_term_policy_pool_size", type=int, default=10, help="size of short term policy pool")
+    # parser.add_argument("--long_term_policy_pool_size", type=int, default=30000, help="size of long term policy pool")
+    # parser.add_argument("--short_term_policy_pool_size", type=int, default=10, help="size of short term policy pool")
     # parser.add_argument("--top_k_policy_update_freq", type=int, default=10, help="interval of updating top k policy pool")
     # parser.add_argument("--top_k_policy_pool_size", type=int, default=10, help="size of top k policy pool")
-    parser.add_argument("--freq_of_pushing_moodels_to_server", type=int, default=10, help="frequency of pushing models to server")
-
-    parser.add_argument("--freq_of_fetching_random_models", type=int, default=10, help="frequency of fetching random models from server")
+    # parser.add_argument("--freq_of_pushing_moodels_to_server", type=int, default=10, help="frequency of pushing models to server")
+    parser.add_argument("--push_new_policy_to_server", type=int, default=0, help="whether to push new policy to server")
+    parser.add_argument("--upload_freq", type=int, default=10, help="frequency of uploading models to server")
+    parser.add_argument("--local_epoch", type=int, default=50, help="local epoch")
     args = parser.parse_args()
     return args
 
@@ -97,10 +98,12 @@ if __name__ == '__main__':
     yaml_cfg.Trainer["p_lr"] = args.p_lr
     yaml_cfg.Trainer["batch_size"] = args.batch_size
     
-    yaml_cfg.Trainer["long_term_policy_update_freq"] = args.long_term_policy_update_freq
-    yaml_cfg.Trainer["long_term_policy_pool_size"] = args.long_term_policy_pool_size
-    yaml_cfg.Trainer["short_term_policy_pool_size"] = args.short_term_policy_pool_size
-    yaml_cfg.Trainer["freq_of_pushing_moodels_to_server"] = args.freq_of_pushing_moodels_to_server
+    # yaml_cfg.Trainer["long_term_policy_update_freq"] = args.long_term_policy_update_freq
+    # yaml_cfg.Trainer["long_term_policy_pool_size"] = args.long_term_policy_pool_size
+    # yaml_cfg.Trainer["short_term_policy_pool_size"] = args.short_term_policy_pool_size
+    # yaml_cfg.Trainer["freq_of_pushing_moodels_to_server"] = args.freq_of_pushing_moodels_to_server
+    yaml_cfg.Trainer["upload_freq"] = args.upload_freq
+    yaml_cfg.Trainer["local_training_epoch"] = args.local_epoch
     # yaml_cfg.Trainer["top_k_policy_update_freq"] = args.top_k_policy_update_freq
     # yaml_cfg.Trainer["top_k_policy_pool_size"] = args.top_k_policy_pool_size
 
@@ -129,10 +132,8 @@ if __name__ == '__main__':
     
     initial_communicate_with_server(USER_ID)
     code_path = "TaxAI_3rd_version/agents/model_self"
-    fetch_random_top_k_model(user_id=USER_ID, dest_dir= code_path)
-    import time
-    print("sleep 10s for fetching models from server...")
-    time.sleep(10)
+    if not args.push_new_policy_to_server: # If not push new policy to server, fetch a top_k model from server to agents/model_self
+        fetch_random_top_k_model(user_id=USER_ID, dest_dir= code_path)
     
     Agent = dynamic_import_class("agent", os.path.join(code_path, 'agent.py'), "agent")
     trainer = Agent(env, yaml_cfg.Trainer)
