@@ -254,7 +254,9 @@ class agent:
     
 
 # could be eigher models from server or models from short/long term policy pool
-    def train_with_external_models(self, external_household_logs, external_government_logs):
+    def train_with_external_models(self):
+        external_household_logs = (self.model_path) + ""
+        external_government_logs = self.model_path + ""
         episode_rewards = np.zeros((self.args.n_households, ), dtype=np.float32)
         global_obs, private_obs = self.envs.reset()
         global_obs, private_obs = self.observation_wrapper(global_obs, private_obs)
@@ -491,7 +493,7 @@ class agent:
             
         # training with external models
 
-            # self.train_with_external_models()
+            self.train_with_external_models()
 
 
             if update % self.args.display_interval == 0:
