@@ -183,6 +183,9 @@ def list_zip_contents(zip_filename):
         return zip_contents
     
 def fetch_random_top_k_model(k=5, user_id=USER_ID, dest_dir="TaxAI_3rd_version/agents/model_self"):
+    
+    if os.path.exists(dest_dir) and os.listdir(dest_dir):
+        shutil.rmtree(dest_dir)
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
 
@@ -232,8 +235,9 @@ def fetch_random_top_k_model(k=5, user_id=USER_ID, dest_dir="TaxAI_3rd_version/a
 
 # if __name__ == "__main__":
     # 示例用法
-#     initial_communicate_with_server(USER_ID)
+    # initial_communicate_with_server(USER_ID)
 #     push_folder("/home/mhm/workspace/Competition_TaxingAI/TaxAI_3rd_version/agents/model_self", user_id=USER_ID, model_id="test_model4", algo_name="test_algo", epoch=0)
 
-    # fetch_random_models(user_id=USER_ID)
+    # fetch_random_models(user_id=USER_ID, dest_dir= "TaxAI_3rd_version/agents/model_self")
+    # fetch_random_top_k_model(user_id=USER_ID, dest_dir= code_path)
 #     fetch_random_top_k_model(user_id=USER_ID, dest_dir="TaxAI_3rd_version/agents/model_self")

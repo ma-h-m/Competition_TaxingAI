@@ -2,3 +2,4 @@ id,path,algo,epoch,score,client_id,evaluated_times
 independent_ppo-1718872725,Server/policy_pools/test2_independent_ppo-1718872725/run/house_net.pt,independent_ppo,0,0,test2,0
 test_model3,Server/policy_pools/test2_test_model3/run/house_net.pt,test_algo,0,0,test2,0
 test_model4,Server/policy_pools/test2_test_model4/run/house_net.pt,test_algo,0,0,test2,0
+test_model4,Server/policy_pools/test2_test_model4/run/house_net.pt,ppo,0,0,test2,0

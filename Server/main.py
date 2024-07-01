@@ -336,7 +336,10 @@ def get_random_models(num_household, num_government, top_k = 0):
     # 获取抽取模型的详细信息
     gov_selected_df = gov_df[gov_df['path'].isin(gov_list)][['path', 'algo', 'epoch', 'score']]
     hh_selected_df = hh_df[hh_df['path'].isin(hh_list)][['path', 'algo', 'epoch', 'score']]
-    
+
+    gov_list = [os.path.dirname(os.path.dirname(path)) for path in gov_list]
+    hh_list = [os.path.dirname(os.path.dirname(path)) for path in hh_list]
+
 
     return gov_list, hh_list, gov_selected_df, hh_selected_df
 
@@ -363,10 +366,11 @@ def get_random_top_k_model(top_num, isHousehold):
     # 从前top_num个模型中随机选择一个
     selected_row = top_k_df.sample(n=1).iloc[0]
     
-    selected_path = selected_row['path']
+    selected_path = os.path.dirname(os.path.dirname(selected_row['path']))
     selected_algo = selected_row['algo']
     selected_epoch = selected_row['epoch']
     selected_score = selected_row['score']
+    
     
     return selected_path, selected_algo, selected_epoch, selected_score
 

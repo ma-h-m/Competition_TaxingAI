@@ -142,9 +142,9 @@ if __name__ == '__main__':
         if not args.push_new_policy_to_server: # If not push new policy to server, fetch a top_k model from server to agents/model_self
             shutil.rmtree(code_path)
             fetch_random_top_k_model(user_id=USER_ID, dest_dir= code_path)
-            print("Fetch model from server to agents/model_self")
+            print("Fetch model from server to:", code_path)
         
-        fetch_random_models(user_id=USER_ID, dest_dir=external_policy_path)
+        # fetch_random_models(user_id=USER_ID, dest_dir=external_policy_path)
         Agent = dynamic_import_class("agent", os.path.join(code_path, 'agent.py'), "agent")
         trainer = Agent(env, yaml_cfg.Trainer)
 
